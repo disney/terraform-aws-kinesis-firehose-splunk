@@ -22,12 +22,12 @@ variable "firehose_name" {
 
 variable "kinesis_firehose_buffer" {
   description = "https://www.terraform.io/docs/providers/aws/r/kinesis_firehose_delivery_stream.html#buffer_size"
-  default     = 5                                                                                                 # Megabytes
+  default     = 5 # Megabytes
 }
 
 variable "kinesis_firehose_buffer_interval" {
   description = "Buffer incoming data for the specified period of time, in seconds, before delivering it to the destination"
-  default     = 300                                                                                                          # Seconds
+  default     = 300 # Seconds
 }
 
 variable "s3_prefix" {
@@ -61,7 +61,7 @@ variable "enable_fh_cloudwatch_logging" {
 }
 
 variable "tags" {
-  type        = "map"
+  type        = map(string)
   description = "Map of tags to put on the resource"
   default     = {}
 }
@@ -83,7 +83,7 @@ variable "s3_bucket_name" {
 
 variable "encryption_context" {
   description = "aws_kms_secrets encryption context"
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
 
@@ -146,5 +146,6 @@ variable "cloudwatch_log_filter_name" {
 
 variable "subscription_filter_pattern" {
   description = "Filter pattern for the CloudWatch Log Group subscription to the Kinesis Firehose. See [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) for filter pattern info."
-  default     = ""                                                                                                                                                                                                            # nothing is being filtered
+  default     = "" # nothing is being filtered
 }
+
