@@ -12,7 +12,7 @@ variable "hec_token" {
 
 variable "nodejs_runtime" {
   description = "Runtime version of nodejs for Lambda function"
-  default     = "nodejs6.10"
+  default     = "nodejs12.x"
 }
 
 variable "firehose_name" {

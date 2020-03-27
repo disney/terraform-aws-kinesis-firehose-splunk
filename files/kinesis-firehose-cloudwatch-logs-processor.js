@@ -43,9 +43,6 @@ The code below will:
    method.
 6) Any additional records which exceed 6MB will be re-ingested back into Firehose.
 */
-
-'use strict';
-
 const zlib = require('zlib');
 const AWS = require('aws-sdk');
 
@@ -139,12 +136,12 @@ function putRecordsToKinesisStream(streamName, records, client, resolve, reject,
 function createReingestionRecord(isSas, originalRecord) {
     if (isSas) {
         return {
-            Data: new Buffer(originalRecord.data, 'base64'),
+            Data: Buffer.from(originalRecord.data, 'base64'),
             PartitionKey: originalRecord.kinesisRecordMetadata.partitionKey,
         };
     } else {
         return {
-            Data: new Buffer(originalRecord.data, 'base64'),
+            Data: Buffer.from(originalRecord.data, 'base64'),
         };
     }
 }
@@ -165,8 +162,18 @@ function getReingestionRecord(isSas, reIngestionRecord) {
 
 exports.handler = (event, context, callback) => {
     Promise.all(event.records.map(r => {
-        const buffer = new Buffer(r.data, 'base64');
-        const decompressed = zlib.gunzipSync(buffer);
+        const buffer = Buffer.from(r.data, 'base64');
+
+        let decompressed;
+        try {
+            decompressed = zlib.gunzipSync(buffer);
+        } catch (e) {
+            return Promise.resolve({
+                recordId: r.recordId,
+                result: 'ProcessingFailed',
+            });
+        }
+
         const data = JSON.parse(decompressed);
         // CONTROL_MESSAGE are sent by CWL to check if the subscription is reachable.
         // They do not contain actual data.
@@ -180,7 +187,7 @@ exports.handler = (event, context, callback) => {
             return Promise.all(promises)
                 .then(transformed => {
                     const payload = transformed.reduce((a, v) => a + v, '');
-                    const encoded = new Buffer(payload).toString('base64');
+                    const encoded = Buffer.from(payload).toString('base64');
                     return {
                         recordId: r.recordId,
                         result: 'Ok',
@@ -207,7 +214,7 @@ exports.handler = (event, context, callback) => {
 
         let projectedSize = recs.filter(rec => rec.result === 'Ok')
                               .map(r => r.recordId.length + r.data.length)
-                              .reduce((a, b) => a + b);
+                              .reduce((a, b) => a + b, 0);
         // 6000000 instead of 6291456 to leave ample headroom for the stuff we didn't account for
         for (let idx = 0; idx < event.records.length && projectedSize > 6000000; idx++) {
             const rec = result.records[idx];
