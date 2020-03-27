@@ -36,7 +36,7 @@ module "kinesis_firehose" {
 | encryption_context | aws_kms_secrets encryption context | map | `{}` | no |
 | hec_url | Splunk Kinesis URL for submitting CloudWatch logs to splunk | string | - | yes |
 | hec_endpoint_type | The Splunk HEC endpoint type. | string | `Raw` | no |
-| nodejs_runtime | Runtime version of nodejs for Lambda function | string | `nodejs6.10` | no |
+| nodejs_runtime | Runtime version of nodejs for Lambda function | string | `nodejs12.x` | no |
 | firehose_name  | Name of the Kinesis Firehose | string | `kinesis-firehose-to-splunk` | no |
 | kinesis_firehose_buffer | Best to read it [here](https://www.terraform.io/docs/providers/aws/r/kinesis_firehose_delivery_stream.html#buffer_size) | integer | `5` | no |
 | kinesis_firehose_buffer_interval | Buffer incoming data for the specified period of time, in seconds, before delivering it to the destination | integer | `300` | no |
