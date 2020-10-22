@@ -50,7 +50,6 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 # S3 Bucket for Kinesis Firehose s3_backup_mode
 resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   bucket = var.s3_bucket_name
-  region = var.region
   acl    = "private"
 
   server_side_encryption_configuration {
