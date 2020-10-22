@@ -63,6 +63,16 @@ resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   tags = var.tags
 }
 
+resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
+  count  = "${var.s3_bucket_block_public_access_enabled}"
+  bucket = "${aws_s3_bucket.kinesis_firehose_s3_bucket.id}"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 # Cloudwatch logging group for Kinesis Firehose
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
   name              = "/aws/kinesisfirehose/${var.firehose_name}"

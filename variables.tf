@@ -81,6 +81,11 @@ variable "s3_bucket_name" {
   default     = "kinesis-firehose-to-splunk"
 }
 
+variable "s3_bucket_block_public_access_enabled" {
+  description = "Set to 1 if you would like to add block public access settings for the s3 bucket Kinesis Firehose uses for backups"
+  default     = 0
+}
+
 variable "encryption_context" {
   description = "aws_kms_secrets encryption context"
   type        = map(string)
