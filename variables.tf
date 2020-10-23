@@ -78,7 +78,6 @@ variable "log_stream_name" {
 
 variable "s3_bucket_name" {
   description = "Name of the s3 bucket Kinesis Firehose uses for backups"
-  default     = "kinesis-firehose-to-splunk"
 }
 
 variable "s3_bucket_block_public_access_enabled" {
