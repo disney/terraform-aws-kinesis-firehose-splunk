@@ -50,7 +50,6 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 # S3 Bucket for Kinesis Firehose s3_backup_mode
 resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   bucket = var.s3_bucket_name
-  region = var.region
   acl    = "private"
 
   server_side_encryption_configuration {
@@ -62,6 +61,16 @@ resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   }
 
   tags = var.tags
+}
+
+resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
+  count  = var.s3_bucket_block_public_access_enabled
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 # Cloudwatch logging group for Kinesis Firehose
