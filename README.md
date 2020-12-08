@@ -25,6 +25,28 @@ module "kinesis_firehose" {
 
 ```
 
+### Adding Cloudwatch Subscription filters
+If you'd like to agrgate multiple log groups you can add additional subscriptions use the outputs.
+
+##### Example
+```
+resource "aws_cloudwatch_log_group" "my_lambdafunction" {
+  name = "/aws/lambda/my_lambda"
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "my_lambdafunction" {
+  name            = "my_lambdafunction_logfilter"
+  role_arn        = module.kinesis_firehose.cloudwatch_to_firehose_trust_arn
+  log_group_name  = "/aws/lambda/my_lambda"
+  filter_pattern  = ""
+  destination_arn = module.kinesis_firehose.destination_stream_arn
+  distribution    = "Random"
+
+  depends_on = [aws_cloudwatch_log_group.my_lambdafunction]
+}
+
+```
+
 ### Inputs
 
 | Variable Name | Description | Type  | Default | Required |
@@ -59,6 +81,14 @@ module "kinesis_firehose" {
 | cloudwatch_to_fh_access_policy_name | Name of IAM policy attached to the IAM role for CloudWatch to Kinesis Firehose subscription | string | `KinesisCloudWatchToFirehosePolicy` | no |
 | cloudwatch_log_filter_name | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | string | `KinesisSubscriptionFilter` | no |
 | subscription_filter_pattern | Filter pattern for the CloudWatch Log Group subscription to the Kinesis Firehose. See [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) for filter pattern info. | string | `""` (no filter) | no |
+
+
+### Outputs
+
+| Name | Description | Type |
+| cloudwatch_to_firehose_trust_arn | cloudwatch log subscription filter role_arn | string |
+| destination_stream_arn | cloudwatch log subscription filter destination_arn | string |
+
 
 #### Acknowledgements
 
