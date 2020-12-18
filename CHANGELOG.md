@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 3.0.1
+  * Added `outputs.tf`
+
 ## 3.0.0 - Breaking Change - (thanks [phundisk](https://github.com/phundisk))
   * Remove default value for S3 Backup Bucket; this input is now required as S3 bucket names must be globally unique so having a default value was N/A anyway
   * Remove region from resource aws_s3_bucket as that is not an parameter in the latest aws provider
