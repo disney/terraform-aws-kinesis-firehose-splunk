@@ -60,6 +60,13 @@ module "kinesis_firehose" {
 | cloudwatch_log_filter_name | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | string | `KinesisSubscriptionFilter` | no |
 | subscription_filter_pattern | Filter pattern for the CloudWatch Log Group subscription to the Kinesis Firehose. See [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) for filter pattern info. | string | `""` (no filter) | no |
 
+### Outputs
+
+| Name | Description |
+|------|-------------|
+| cloudwatch_to_firehose_trust_arn | CloudWatch log subscription filter role ARN |
+| destination_firehose_arn | CloudWatch log subscription filter Firehose destination arn |
+
 #### Acknowledgements
 
 _Author_
