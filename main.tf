@@ -287,7 +287,7 @@ resource "aws_iam_policy" "kinesis_firehose_iam_policy" {
   policy = data.aws_iam_policy_document.kinesis_firehose_policy_document.json
 }
 
-resource "aws_iam_role_policy_attachment" "kenisis_fh_role_attachment" {
+resource "aws_iam_role_policy_attachment" "kinesis_fh_role_attachment" {
   role       = aws_iam_role.kinesis_firehose.name
   policy_arn = aws_iam_policy.kinesis_firehose_iam_policy.arn
 }
