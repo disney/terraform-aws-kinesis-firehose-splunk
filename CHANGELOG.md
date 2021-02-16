@@ -1,5 +1,10 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 4.0.0 - Breaking Changes - (thanks [ShawnUCD](https://github.com/ShawnUCD))
+  * Require Terraform 0.13.0 or greater. Terraform 0.12.x is not longer being developed or patched (including backports) by Hashicorp
+  * New providers block that is supported by Terraform 0.13.x and higher
+  * Fixed typo in the `resource "aws_iam_role_policy_attachment" "kenisis_fh_role_attachment"` resource in `main.tf`
+
 ## 3.0.1
   * Added `outputs.tf`
 
