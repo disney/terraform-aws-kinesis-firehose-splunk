@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 5.0.1
+  * Remove mention of `aws_region` input variable in README.md. This variable is no longer needed.
+
 ## 5.0.0
   * Require Terraform 1.0.0 or greater (drops support for versions lower than 1.0.0)
   * Fix [#7](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/7) - Remove provider block, which is also recommended by Terraform as discussed [here](https://github.com/hashicorp/terraform/issues/28580#issuecomment-831263879)
