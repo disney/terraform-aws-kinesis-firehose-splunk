@@ -14,7 +14,7 @@ You will use a KMS key of your choice to encrypt the token, as it is sensitive. 
 ```
 module "kinesis_firehose" {
   source = "disney/kinesis-firehose-splunk/aws"
-  aws_region = "us-east-1"
+  region = "us-east-1"
   arn_cloudwatch_logs_to_ship = "arn:aws:logs:us-east-1:<aws_account_number>:log-group:/test/test01:*"  
   name_cloudwatch_logs_to_ship = "/test/test01"
   hec_token = "<KMS_encrypted_token>"
