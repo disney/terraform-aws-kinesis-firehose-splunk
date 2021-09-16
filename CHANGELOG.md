@@ -1,5 +1,9 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 5.0.0
+  * Require Terraform 1.0.0 or greater (drops support for versions lower than 1.0.0)
+  * Fix [#7](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/7) - Remove provider block, which is also recommended by Terraform as discussed [here](https://github.com/hashicorp/terraform/issues/28580#issuecomment-831263879)
+
 ## 4.0.0 - Breaking Changes - (thanks [ShawnUCD](https://github.com/ShawnUCD))
   * Require Terraform 0.13.0 or greater. Terraform 0.12.x is not longer being developed or patched (including backports) by Hashicorp
   * New providers block that is supported by Terraform 0.13.x and higher
