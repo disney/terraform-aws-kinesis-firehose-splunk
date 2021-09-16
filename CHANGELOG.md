@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 5.0.2
+  * Update README with `region` variable in the example
+
 ## 5.0.1
   * Remove mention of `aws_region` input variable in README.md. This variable is no longer needed.
 
