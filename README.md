@@ -10,6 +10,8 @@ Once you have received the token, you can proceed forward in creating a `module`
 
 You will use a KMS key of your choice to encrypt the token, as it is sensitive.  See `hec_token` input variable below for more information.
 
+**Note:** the user of this module is responsible for specifying the `provider {}` block for the AWS Terraform provider. As of v5.0.0 the provider block was removed from this module.
+
 ##### Example
 ```
 module "kinesis_firehose" {
@@ -59,6 +61,8 @@ module "kinesis_firehose" {
 | cloudwatch_to_fh_access_policy_name | Name of IAM policy attached to the IAM role for CloudWatch to Kinesis Firehose subscription | string | `KinesisCloudWatchToFirehosePolicy` | no |
 | cloudwatch_log_filter_name | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | string | `KinesisSubscriptionFilter` | no |
 | subscription_filter_pattern | Filter pattern for the CloudWatch Log Group subscription to the Kinesis Firehose. See [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) for filter pattern info. | string | `""` (no filter) | no |
+|local_lambda_file| The absolute path to an existing Node.js file| string | `null` | no |
+|local_lambda_file_handler| Allows you to specify Lambda handler if using a local custom file for Lambda function | string| `null` | no |
 
 ### Outputs
 

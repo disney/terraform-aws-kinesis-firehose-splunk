@@ -1,3 +1,8 @@
+locals {
+  lambda_function_source_file = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
+  lambda_function_handler     = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
+}
+
 # Kenisis firehose stream
 # Record Transformation Required, called "processing_configuration" in Terraform
 resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
@@ -198,7 +203,7 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
   description      = "Transform data from CloudWatch format to Splunk compatible format"
   filename         = data.archive_file.lambda_function.output_path
   role             = aws_iam_role.kinesis_firehose_lambda.arn
-  handler          = "kinesis-firehose-cloudwatch-logs-processor.handler"
+  handler          = local.lambda_function_handler
   source_code_hash = data.archive_file.lambda_function.output_base64sha256
   runtime          = var.nodejs_runtime
   timeout          = var.lambda_function_timeout
@@ -210,7 +215,7 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
 # code supplied to AWS by Splunk.
 data "archive_file" "lambda_function" {
   type        = "zip"
-  source_file = "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
+  source_file = local.lambda_function_source_file
   output_path = "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.zip"
 }
 

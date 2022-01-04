@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 5.1.0
+  * Fix [#10](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/10) - Support custom Lambda script, as well as the `handler` for the custom code
+
 ## 5.0.3
   * Require `>= 3.58.0` of the aws provider (fixes issue with privisioning a NodeJS 12.x Lambda)
 

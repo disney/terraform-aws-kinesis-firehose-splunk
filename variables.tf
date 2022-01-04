@@ -153,3 +153,12 @@ variable "subscription_filter_pattern" {
   default     = "" # nothing is being filtered
 }
 
+variable "local_lambda_file" {
+  description = "The absolute path to an existing Node.js file"
+  default     = null
+}
+
+variable "local_lambda_file_handler" {
+  description = "Allows you to specify Lambda handler if using a local custom file for Lambda function"
+  default     = null
+}
