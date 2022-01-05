@@ -154,7 +154,7 @@ variable "subscription_filter_pattern" {
 }
 
 variable "local_lambda_file" {
-  description = "The absolute path to an existing Node.js file"
+  description = "The absolute path to an existing custom Lambda script"
   default     = null
 }
 

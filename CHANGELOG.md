@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 5.1.1
+ * Update description for `var.local_lambda_file`; it does not have to be a NodeJS file
+
 ## 5.1.0
   * Fix [#10](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/10) - Support custom Lambda script, as well as the `handler` for the custom code
 
