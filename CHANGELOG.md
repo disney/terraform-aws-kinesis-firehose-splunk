@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 5.1.2
+ * Update license
+
 ## 5.1.1
  * Update description for `var.local_lambda_file`; it does not have to be a NodeJS file
 
