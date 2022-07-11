@@ -59,12 +59,12 @@ resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   tags = var.tags
 }
 
-resource "aws_s3_bucket_acl" "example_bucket_acl" {
+resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
   acl    = "private"
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
 
   rule {

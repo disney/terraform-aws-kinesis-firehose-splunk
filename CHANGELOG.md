@@ -1,5 +1,10 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 6.0.0
+ * Requires `>= 4.0.0` of the AWS provider; merged in [S3 changes](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/15)
+ * Update README for the correct location of `aws_kms_secrets` usage example
+ * Added `*.zip` to `.gitignore` file
+
 ## 5.1.2
  * Update license
 
