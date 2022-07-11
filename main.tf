@@ -55,17 +55,23 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 # S3 Bucket for Kinesis Firehose s3_backup_mode
 resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   bucket = var.s3_bucket_name
-  acl    = "private"
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 
   tags = var.tags
+}
+
+resource "aws_s3_bucket_acl" "example_bucket_acl" {
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
@@ -362,4 +368,3 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter" {
   log_group_name  = var.name_cloudwatch_logs_to_ship
   filter_pattern  = var.subscription_filter_pattern
 }
-
