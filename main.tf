@@ -54,9 +54,18 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 
 # S3 Bucket for Kinesis Firehose s3_backup_mode
 resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
-  bucket = var.s3_bucket_name
+  bucket              = var.s3_bucket_name
+  object_lock_enabled = var.s3_bucket_object_lock_enabled
 
   tags = var.tags
+}
+
+resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  versioning_configuration {
+    status = var.aws_s3_bucket_versioning
+  }
 }
 
 resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
@@ -82,6 +91,14 @@ resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  rule {
+
+  }
 }
 
 # Cloudwatch logging group for Kinesis Firehose

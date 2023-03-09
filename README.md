@@ -1,3 +1,5 @@
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/disney/terraform-aws-kinesis-firehose-splunk/master.svg)](https://results.pre-commit.ci/latest/github/disney/terraform-aws-kinesis-firehose-splunk/master)
+
 # Send CloudWatch Logs to Splunk via Kinesis Firehose
 
 This module configures a Kinesis Firehose, sets up a subscription for a desired CloudWatch Log Group to the Firehose, and sends the log data to Splunk.  A Lambda function is required to transform the CloudWatch Log data from "CloudWatch compressed format" to a format compatible with Splunk.  This module takes care of configuring this Lambda function.

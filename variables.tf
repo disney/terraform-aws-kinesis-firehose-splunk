@@ -162,3 +162,13 @@ variable "local_lambda_file_handler" {
   description = "Allows you to specify Lambda handler if using a local custom file for Lambda function"
   default     = null
 }
+
+variable "aws_s3_bucket_versioning" {
+  description = "Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets."
+  default     = null
+}
+
+variable "s3_bucket_object_lock_enabled" {
+  description = "Indicates whether this bucket has an Object Lock configuration enabled. Valid values: Enabled."
+  default     = null
+}
