@@ -34,6 +34,7 @@ jobs:
           # This will add both a CLI output to the console and create a results.sarif file
           output_format: cli,sarif
           output_file_path: console,results.sarif
+          config_file: ../checkov-config.yaml
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
