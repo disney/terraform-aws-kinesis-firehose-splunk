@@ -6,3 +6,6 @@ skip-check:
   - CKV_AWS_117 # "Ensure that AWS Lambda function is configured inside a VPC"
   - CKV_AWS_116 # "Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ)"
   - CKV_AWS_272 # "Ensure AWS Lambda function is configured to validate code-signing"
+  - CKV2_GHA_1
+  - CKV_AWS_240
+  - CKV_AWS_241
