@@ -1,62 +1,75 @@
 variable "region" {
   description = "The region of AWS you want to work in, such as us-west-2 or us-east-1"
+  type        = string
 }
 
 variable "hec_url" {
   description = "Splunk Kinesis URL for submitting CloudWatch logs to splunk"
+  type        = string
 }
 
 variable "hec_token" {
   description = "Splunk security token needed to submit data to Splunk"
+  type        = string
 }
 
 variable "nodejs_runtime" {
   description = "Runtime version of nodejs for Lambda function"
   default     = "nodejs12.x"
+  type        = string
 }
 
 variable "firehose_name" {
   description = "Name of the Kinesis Firehose"
   default     = "kinesis-firehose-to-splunk"
+  type        = string
 }
 
 variable "kinesis_firehose_buffer" {
   description = "https://www.terraform.io/docs/providers/aws/r/kinesis_firehose_delivery_stream.html#buffer_size"
+  type        = number
   default     = 5 # Megabytes
 }
 
 variable "kinesis_firehose_buffer_interval" {
   description = "Buffer incoming data for the specified period of time, in seconds, before delivering it to the destination"
+  type        = number
   default     = 300 # Seconds
 }
 
 variable "s3_prefix" {
   description = "Optional prefix (a slash after the prefix will show up as a folder in the s3 bucket).  The YYYY/MM/DD/HH time format prefix is automatically used for delivered S3 files."
+  type        = string
   default     = "kinesis-firehose/"
 }
 
 variable "hec_acknowledgment_timeout" {
   description = "The amount of time, in seconds between 180 and 600, that Kinesis Firehose waits to receive an acknowledgment from Splunk after it sends it data."
+  type        = number
   default     = 300
 }
 
 variable "hec_endpoint_type" {
   description = "Splunk HEC endpoint type; `Raw` or `Event`"
+  type        = string
   default     = "Raw"
 }
 
 variable "s3_backup_mode" {
   description = "Defines how documents should be delivered to Amazon S3. Valid values are FailedEventsOnly and AllEvents."
+  type        = string
   default     = "FailedEventsOnly"
 }
 
 variable "s3_compression_format" {
   description = "The compression format for what the Kinesis Firehose puts in the s3 bucket"
+  type        = string
   default     = "GZIP"
 }
 
 variable "enable_fh_cloudwatch_logging" {
   description = "Enable kinesis firehose CloudWatch logging. (It only logs errors)"
+  type        = bool
   default     = true
 }
 
@@ -68,20 +81,24 @@ variable "tags" {
 
 variable "cloudwatch_log_retention" {
   description = "Length in days to keep CloudWatch logs of Kinesis Firehose"
+  type        = number
   default     = 30
 }
 
 variable "log_stream_name" {
   description = "Name of the CloudWatch log stream for Kinesis Firehose CloudWatch log group"
+  type        = string
   default     = "SplunkDelivery"
 }
 
 variable "s3_bucket_name" {
   description = "Name of the s3 bucket Kinesis Firehose uses for backups"
+  type        = string
 }
 
 variable "s3_bucket_block_public_access_enabled" {
   description = "Set to 1 if you would like to add block public access settings for the s3 bucket Kinesis Firehose uses for backups"
+  type        = number
   default     = 0
 }
 
@@ -93,82 +110,135 @@ variable "encryption_context" {
 
 variable "kinesis_firehose_lambda_role_name" {
   description = "Name of IAM Role for Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format"
+  type        = string
   default     = "KinesisFirehoseToLambaRole"
 }
 
 variable "kinesis_firehose_role_name" {
   description = "Name of IAM Role for the Kinesis Firehose"
+  type        = string
   default     = "KinesisFirehoseRole"
 }
 
 variable "arn_cloudwatch_logs_to_ship" {
   description = "arn of the CloudWatch Log Group that you want to ship to Splunk."
+  type        = string
 }
 
 variable "name_cloudwatch_logs_to_ship" {
   description = "name of the CloudWatch Log Group that you want to ship to Splunk."
+  type        = string
 }
 
 variable "lambda_function_name" {
   description = "Name of the Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format"
+  type        = string
   default     = "kinesis-firehose-transform"
 }
 
 variable "lambda_function_timeout" {
   description = "The function execution time at which Lambda should terminate the function."
+  type        = number
   default     = 180
 }
 
 variable "lambda_iam_policy_name" {
   description = "Name of the IAM policy that is attached to the IAM Role for the lambda transform function"
+  type        = string
   default     = "Kinesis-Firehose-to-Splunk-Policy"
 }
 
 variable "kms_key_arn" {
   description = "arn of the KMS key you used to encrypt the hec_token"
+  type        = string
 }
 
 variable "kinesis_firehose_iam_policy_name" {
   description = "Name of the IAM Policy attached to IAM Role for the Kinesis Firehose"
   default     = "KinesisFirehose-Policy"
+  type        = string
 }
 
 variable "cloudwatch_to_firehose_trust_iam_role_name" {
   description = "IAM Role name for CloudWatch to Kinesis Firehose subscription"
+  type        = string
   default     = "CloudWatchToSplunkFirehoseTrust"
 }
 
 variable "cloudwatch_to_fh_access_policy_name" {
   description = "Name of IAM policy attached to the IAM role for CloudWatch to Kinesis Firehose subscription"
+  type        = string
   default     = "KinesisCloudWatchToFirehosePolicy"
 }
 
 variable "cloudwatch_log_filter_name" {
   description = "Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose"
+  type        = string
   default     = "KinesisSubscriptionFilter"
 }
 
 variable "subscription_filter_pattern" {
   description = "Filter pattern for the CloudWatch Log Group subscription to the Kinesis Firehose. See [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) for filter pattern info."
+  type        = string
   default     = "" # nothing is being filtered
 }
 
 variable "local_lambda_file" {
   description = "The absolute path to an existing custom Lambda script"
+  type        = string
   default     = null
 }
 
 variable "local_lambda_file_handler" {
   description = "Allows you to specify Lambda handler if using a local custom file for Lambda function"
+  type        = string
   default     = null
 }
 
 variable "aws_s3_bucket_versioning" {
   description = "Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets."
+  type        = string
   default     = null
 }
 
 variable "s3_bucket_object_lock_enabled" {
   description = "Indicates whether this bucket has an Object Lock configuration enabled. Valid values: Enabled."
+  type        = string
+  default     = null
+}
+
+variable "firehose_server_side_encryption_enabled" {
+  description = "Enable SSE for Kinesis Firehose"
+  type        = bool
+  default     = false
+}
+
+variable "firehose_server_side_encryption_key_type" {
+  description = "Type of SSE key to be used for encrypting the Firehose. Valid values are `AWS_OWNED_CMK` and `CUSTOMER_MANAGED_CMK`"
+  type        = string
+  default     = null
+}
+
+variable "firehose_server_side_encryption_key_arn" {
+  description = "ARN of the key to be used for Firehose SSE"
+  type        = string
+  default     = null
+}
+
+variable "cloudwach_log_group_kms_key_id" {
+  description = "KMS key ID of the key to use to encrypt the Cloudwatch log group"
+  type        = string
+  default     = null
+}
+
+variable "lambda_reserved_concurrent_executions" {
+  description = "Amount of reserved concurrent executions for this lambda function. A value of `0` disables lambda from being triggered and `-1` removes any concurrency limitations."
+  type        = string
+  default     = null
+}
+
+variable "lambda_tracing_config" {
+  description = "Configures x-ray tracing for Lambda fuction. See valid values here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function#mode"
+  type        = string
   default     = null
 }

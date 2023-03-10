@@ -18,6 +18,15 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
     compression_format = var.s3_compression_format
   }
 
+  dynamic "server_side_encryption" {
+    for_each = var.firehose_server_side_encryption_enabled == true ? [1] : []
+    content {
+      enabled  = var.firehose_server_side_encryption_enabled
+      key_type = var.firehose_server_side_encryption_key_type
+      key_arn  = var.firehose_server_side_encryption_key_arn
+    }
+  }
+
   splunk_configuration {
     hec_endpoint               = var.hec_url
     hec_token                  = data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"]
@@ -105,6 +114,7 @@ resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
   retention_in_days = var.cloudwatch_log_retention
+  kms_key_id        = var.cloudwach_log_group_kms_key_id
 
   tags = var.tags
 }
@@ -222,14 +232,22 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_role_attachment" {
 # Create the lambda function
 # The lambda function to transform data from compressed format in Cloudwatch to something Splunk can handle (uncompressed)
 resource "aws_lambda_function" "firehose_lambda_transform" {
-  function_name    = var.lambda_function_name
-  description      = "Transform data from CloudWatch format to Splunk compatible format"
-  filename         = data.archive_file.lambda_function.output_path
-  role             = aws_iam_role.kinesis_firehose_lambda.arn
-  handler          = local.lambda_function_handler
-  source_code_hash = data.archive_file.lambda_function.output_base64sha256
-  runtime          = var.nodejs_runtime
-  timeout          = var.lambda_function_timeout
+  function_name                  = var.lambda_function_name
+  description                    = "Transform data from CloudWatch format to Splunk compatible format"
+  filename                       = data.archive_file.lambda_function.output_path
+  role                           = aws_iam_role.kinesis_firehose_lambda.arn
+  handler                        = local.lambda_function_handler
+  source_code_hash               = data.archive_file.lambda_function.output_base64sha256
+  runtime                        = var.nodejs_runtime
+  timeout                        = var.lambda_function_timeout
+  reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
+
+  dynamic "tracing_config" {
+    for_each = var.lambda_tracing_config == null ? [] : [1]
+    content {
+      mode = var.lambda_tracing_config
+    }
+  }
 
   tags = var.tags
 }

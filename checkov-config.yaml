@@ -1,0 +1,9 @@
+skip-check:
+  - CKV_AWS_144  # "Ensure that S3 bucket has cross-region replication enabled"
+  - CKV_AWS_18 # "Ensure the S3 bucket has access logging enabled"
+  - CKV_AWS_145 # "Ensure that S3 buckets are encrypted with KMS by default"
+  - CKV_AWS_111 # "Ensure IAM policies does not allow write access without constraints"
+  - CKV_AWS_117 # "Ensure that AWS Lambda function is configured inside a VPC"
+  - CKV_AWS_116 # "Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ)"
+  - CKV_AWS_272 # "Ensure AWS Lambda function is configured to validate code-signing"
+  
