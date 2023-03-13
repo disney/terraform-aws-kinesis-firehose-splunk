@@ -1,5 +1,16 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## 6.1.0
+ * Update README.md with `terraform-docs`
+ * Created Github actions pipelines
+ * Support for SSE for the Kinesis Firehose
+ * Added `reserved_concurrent_executions` parameter to Lambda function
+ * Updated all variables to specify `type`
+ * Require less than version `5.0.0` of the AWS provider
+ * Created NOTICE file
+ * Fix [#19](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/18) - Support for S3 bucket Versioning, support for Object Locking, support for s3 bucket lifecycles
+ * Fix [#18](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/18) - Allow the HEC token to be passed as a plaintext or as a Parameter Store
+
 ## 6.0.0
  * Requires `>= 4.0.0` of the AWS provider; merged in [S3 changes](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/15)
  * Update README for the correct location of `aws_kms_secrets` usage example

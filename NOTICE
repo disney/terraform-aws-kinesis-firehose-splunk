@@ -1,0 +1,4 @@
+This product includes code developed by Anton Babenkno, https://github.com/antonbabenko,
+from this repository (specifically the `aws_s3_bucket_lifecycle_configuration` resource, the variables it requires and the example):
+https://github.com/terraform-aws-modules/terraform-aws-s3-bucket. A copy of the license from this
+repository may be obtained here: https://github.com/terraform-aws-modules/terraform-aws-s3-bucket/blob/v3.8.2/LICENSE

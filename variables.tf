@@ -11,6 +11,7 @@ variable "hec_url" {
 variable "hec_token" {
   description = "Splunk security token needed to submit data to Splunk"
   type        = string
+  default     = null
 }
 
 variable "nodejs_runtime" {
@@ -151,6 +152,7 @@ variable "lambda_iam_policy_name" {
 variable "kms_key_arn" {
   description = "arn of the KMS key you used to encrypt the hec_token"
   type        = string
+  default     = null
 }
 
 variable "kinesis_firehose_iam_policy_name" {
@@ -239,6 +241,98 @@ variable "lambda_reserved_concurrent_executions" {
 
 variable "lambda_tracing_config" {
   description = "Configures x-ray tracing for Lambda fuction. See valid values here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function#mode"
+  type        = string
+  default     = null
+}
+
+variable "s3_bucket_server_side_encryption_kms_master_key_id" {
+  description = "AWS KMS master key ID used for the SSE-KMS encryption. This can only be used when you set the value of sse_algorithm as aws:kms. The default aws/s3 AWS KMS master key is used if this element is absent while the sse_algorithm is aws:kms"
+  type        = string
+  default     = null
+}
+
+variable "s3_bucket_server_side_encryption_algorithm" {
+  description = "(Required) Server-side encryption algorithm to use. Valid values are AES256 and aws:kms"
+  type        = string
+  default     = "AES256"
+}
+
+variable "s3_bucket_key_enabled" {
+  description = "Whether or not to use Amazon S3 Bucket Keys for SSE-KMS."
+  type        = bool
+  default     = null
+}
+
+############# 3rd Party Software ############
+variable "lifecycle_rule" {
+  description = "List of maps containing configuration of object lifecycle management."
+  type        = any
+  default     = []
+}
+
+variable "expected_bucket_owner" {
+  description = "The account ID of the expected bucket owner"
+  type        = string
+  default     = null
+}
+########### End 3rd Party Software ###########
+
+variable "object_lock_configuration_token" {
+  description = "S3 bucket object lock configuration token"
+  type        = string
+  default     = null
+}
+
+variable "object_lock_configuration_mode" {
+  description = "Default Object Lock retention mode you want to apply to new objects placed in the specified bucket. Valid values: COMPLIANCE, GOVERNANCE"
+  type        = string
+  default     = null
+}
+
+variable "object_lock_configuration_days" {
+  description = "Required if years is not specified. Number of days that you want to specify for the default retention period"
+  type        = number
+  default     = null
+}
+
+variable "object_lock_configuration_years" {
+  description = "Required if days is not specified. Number of years that you want to specify for the default retention period"
+  type        = number
+  default     = null
+}
+
+variable "hec_token_ssm_parameter_name" {
+  description = "Name of the SSM parameter that stores the value of the HEC token"
+  type        = string
+  default     = null
+}
+
+variable "hec_token_ssm_parameter_description" {
+  description = "Description of the SSM parameter that stores the value of the HEC token"
+  type        = string
+  default     = null
+}
+
+variable "hec_token_ssm_parameter_type" {
+  description = "Type of the parameter. Valid types are String, StringList and SecureString"
+  type        = string
+  default     = null
+}
+
+variable "hec_token_ssm_parameter_store_kms_key_id" {
+  description = "The ID of the KMS key used to encrypted the SecureString HEC token SSM parameter. Optional."
+  type        = string
+  default     = null
+}
+
+variable "hec_token_ssm_parameter_value" {
+  description = "The HEC token value that will be put into the SSM Parameter"
+  type        = string
+  default     = null
+}
+
+variable "self_managed_hec_token" {
+  description = "This variable allows for the user to have additional flexibility in how they pass in the HEC token. Perhaps they want to use a different tool than SSM or KMS encryption in their code base to encrypt it"
   type        = string
   default     = null
 }
