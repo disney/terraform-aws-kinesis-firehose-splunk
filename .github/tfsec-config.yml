@@ -7,4 +7,5 @@ exclude:
   - aws-s3-enable-bucket-logging
   - aws-s3-enable-versioning # specified elsewhere
   - aws-lambda-enable-tracing
-  - aws-s3-specify-public-access-block
+  - aws-s3-specify-public-access-block # specified elsewhere
+  - aws-s3-ignore-public-acls # specified elsewhere
