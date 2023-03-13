@@ -1,0 +1,10 @@
+---
+exclude:
+  - aws-iam-no-policy-wildcards
+  - aws-s3-block-public-acls # specified elsewhere
+  - aws-s3-block-public-policy # specified elsewhere
+  - aws-s3-no-public-buckets # specified elsewhere
+  - aws-s3-enable-bucket-logging
+  - aws-s3-enable-versioning # specified elsewhere
+  - aws-lambda-enable-tracing
+  - aws-s3-specify-public-access-block
