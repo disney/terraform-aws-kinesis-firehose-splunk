@@ -17,4 +17,4 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.0
         with:
           additional_args:
-            --config-file workflows/tfsec-config.yml
+            --config-file .github/tfsec-config.yml
