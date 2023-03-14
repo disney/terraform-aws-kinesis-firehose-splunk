@@ -23,9 +23,7 @@ repos:
     -   id: terraform_tfsec
     -   id: terraform_validate
     -   id: terraform_tflint
-
--   repo: https://github.com/terraform-docs/terraform-docs
-    rev: v0.16.0
-    hooks:
-    -   id:  terraform-docs-go
-        args: ['--config-file', '.terraform-docs.yml']
+    -   id: terraform_docs
+        args:
+          - --args=--config=.terraform-docs.yml
+          - --args=--output-check=true

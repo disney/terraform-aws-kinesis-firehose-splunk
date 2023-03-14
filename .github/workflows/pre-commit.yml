@@ -12,5 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
+    - uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    - name: Install tfsec
+      id: tfsec
+      run: curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
     - uses: pre-commit/action@v3.0.0
