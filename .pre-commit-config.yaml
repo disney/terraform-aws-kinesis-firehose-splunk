@@ -18,5 +18,3 @@ repos:
         args: ['--args=-write=true']
     -   id: terraform_validate
     -   id: terraform_tflint
-    -   id: terraform_docs
-        args: ["--args=-c=.terraform-docs.yml"]
