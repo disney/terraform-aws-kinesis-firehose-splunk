@@ -147,12 +147,13 @@ resource "aws_cloudwatch_log_stream" "kinesis_logs" {
 
 # handle the sensitivity of the hec_token variable
 data "aws_kms_secrets" "splunk_hec_token" {
-  count = var.hec_token == null ? 0 : 1
-  secret {
-    name    = "hec_token"
-    payload = var.hec_token
-
-    context = var.encryption_context
+  dynamic "secret" {
+    for_each = var.hec_token == null ? [] : [1]
+    content {
+      name    = "hec_token"
+      payload = var.hec_token
+      context = var.encryption_context
+    }
   }
 }
 
