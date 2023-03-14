@@ -1,7 +1,7 @@
 locals {
   lambda_function_source_file = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
   lambda_function_handler     = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
-  hec_token                   = aws_ssm_parameter.hec_token.value != null ? aws_ssm_parameter.hec_token.value : var.self_managed_hec_token
+  hec_token                   = aws_ssm_parameter.hec_token[count.index].value != null ? aws_ssm_parameter.hec_token[count.index].value : var.self_managed_hec_token
 }
 
 # Kenisis firehose stream
