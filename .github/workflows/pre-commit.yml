@@ -18,6 +18,10 @@ jobs:
       id: init
       run: terraform init -upgrade
 
+    - name: Install tflint
+      id: tflint
+      run: curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
     - name: Install tfsec
       id: tfsec
       run: curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash

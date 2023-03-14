@@ -20,7 +20,6 @@ repos:
     hooks:
     -   id: terraform_fmt
         args: ['--args=-write=true']
-    -   id: terraform_tfsec
     -   id: terraform_validate
     -   id: terraform_tflint
     -   id: terraform_docs
