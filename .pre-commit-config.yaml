@@ -26,7 +26,7 @@ repos: # pre-commit autoupdate
     rev: v0.16.0
     hooks:
       - id:  terraform-docs-go
-        args: ['--args=--indent 3', '--args=--config-file .terraform-docs.yml']
+        args: ['--config-file', '.terraform-docs.yml']
 
   - repo: https://github.com/terraform-linters/tflint
     rev: v0.45.0
