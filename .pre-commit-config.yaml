@@ -22,3 +22,4 @@ repos:
         args:
           - --hook-config=-c=.terraform-docs.yml
           - --hook-config=--output-check=true
+          - --hook-config=--path-to-file=README.md
