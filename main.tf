@@ -71,6 +71,7 @@ resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
 }
 
 resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
+  count  = var.aws_s3_bucket_versioning == null ? 0 : 1
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
 
   versioning_configuration {
@@ -417,6 +418,7 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter" {
 }
 
 resource "aws_ssm_parameter" "hec_token" {
+  count       = var.hec_token_ssm_parameter_value == null ? 0 : 1
   name        = var.hec_token_ssm_parameter_name
   description = var.hec_token_ssm_parameter_description
   type        = var.hec_token_ssm_parameter_type
