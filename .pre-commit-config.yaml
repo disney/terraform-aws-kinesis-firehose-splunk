@@ -21,6 +21,7 @@ repos: # pre-commit autoupdate
       - id:  terraform_docs
         args: ['--args=--indent 3']
       - id: terraform_fmt
+        args: ['--args=-write=true']
       - id: terraform_tflint
       - id: checkov
         args: ['--quiet']
