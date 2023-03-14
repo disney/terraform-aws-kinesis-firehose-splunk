@@ -19,7 +19,4 @@ repos:
     -   id: terraform_validate
     -   id: terraform_tflint
     -   id: terraform_docs
-        args:
-          - --hook-config=-c=.terraform-docs.yml
-          - --hook-config=--output-check=true
-          - --hook-config=--path-to-file=README.md
+        args: ["--args=-c=.terraform-docs.yml"]

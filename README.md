@@ -51,10 +51,6 @@ As of v6.1.0, there are two additional options available to pass in the HEC toke
 | archive | 2.3.0 |
 | aws | 4.58.0 |
 
-### Modules
-
-No modules.
-
 ### Resources
 
 | Name | Type |
@@ -85,6 +81,10 @@ No modules.
 | [aws_iam_policy_document.kinesis_firehose_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.lambda_policy_doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_kms_secrets.splunk_hec_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_secrets) | data source |
+
+### Modules
+
+No modules.
 
 ### Inputs
 

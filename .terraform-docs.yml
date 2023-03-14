@@ -7,6 +7,18 @@ sort:
   enabled: true
   by: required
 formatter: "markdown table"
+content: |-
+  {{ .Requirements }}
+
+  {{ .Providers }}
+
+  {{ .Resources }}
+
+  {{ .Modules }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
 output:
   file: README.md
   mode: inject
