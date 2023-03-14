@@ -3,8 +3,8 @@ settings:
   html: false
   inject: true
   indent: 3
-sort: 
-  enabled: true 
+sort:
+  enabled: true
   by: required
 
 output:

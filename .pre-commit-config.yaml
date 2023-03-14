@@ -14,7 +14,7 @@ repos: # pre-commit autoupdate
       - id: requirements-txt-fixer
       - id: mixed-line-ending
         args: ["--fix=auto"] # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
-  
+
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.77.1
     hooks:
