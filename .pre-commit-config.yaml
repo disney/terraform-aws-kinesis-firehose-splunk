@@ -1,35 +1,35 @@
-repos: # pre-commit autoupdate
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
-      - id: trailing-whitespace
-      - id: check-added-large-files
-      - id: check-ast
-      - id: check-json
-      - id: check-merge-conflict
-      - id: check-xml
-      - id: check-yaml
-      - id: debug-statements
-      - id: end-of-file-fixer
-      - id: requirements-txt-fixer
-      - id: mixed-line-ending
+    -   id: trailing-whitespace
+    -   id: check-added-large-files
+    -   id: check-ast
+    -   id: check-json
+    -   id: check-merge-conflict
+    -   id: check-xml
+    -   id: check-yaml
+    -   id: debug-statements
+    -   id: end-of-file-fixer
+    -   id: requirements-txt-fixer
+    -   id: mixed-line-ending
         args: ["--fix=auto"] # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
 
-  - repo: https://github.com/antonbabenko/pre-commit-terraform
+-   repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.77.1
     hooks:
-      - id: terraform_fmt
+    -   id: terraform_fmt
         args: ['--args=-write=true']
-      - id: terraform_tfsec
+    -   id: terraform_tfsec
 
-  - repo: https://github.com/terraform-docs/terraform-docs
+-   repo: https://github.com/terraform-docs/terraform-docs
     rev: v0.16.0
     hooks:
-      - id:  terraform-docs-go
+    -   id:  terraform-docs-go
         args: ['--config-file', '.terraform-docs.yml']
 
-  - repo: https://github.com/terraform-linters/tflint
+-   repo: https://github.com/terraform-linters/tflint
     rev: v0.45.0
     hooks:
-      - id: terraform_tflint
+    -   id: terraform_tflint
         args: ['--quiet']
