@@ -116,6 +116,7 @@ No modules.
 | lambda\_function\_name | Name of the Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format | `string` | `"kinesis-firehose-transform"` | no |
 | lambda\_function\_timeout | The function execution time at which Lambda should terminate the function. | `number` | `180` | no |
 | lambda\_iam\_policy\_name | Name of the IAM policy that is attached to the IAM Role for the lambda transform function | `string` | `"Kinesis-Firehose-to-Splunk-Policy"` | no |
+| lambda\_processing\_buffer\_size\_in\_mb | Lambda processing buffer size in mb. It was noticed that the Lamba appeared to set this by default to `0.256` upon creation. | `number` | `null` | no |
 | lambda\_reserved\_concurrent\_executions | Amount of reserved concurrent executions for this lambda function. A value of `0` disables lambda from being triggered and `-1` removes any concurrency limitations. | `string` | `null` | no |
 | lambda\_tracing\_config | Configures x-ray tracing for Lambda fuction. See valid values here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function#mode | `string` | `null` | no |
 | lifecycle\_rule | List of maps containing configuration of object lifecycle management. | `any` | `[]` | no |

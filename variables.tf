@@ -306,3 +306,9 @@ variable "self_managed_hec_token" {
   type        = string
   default     = null
 }
+
+variable "lambda_processing_buffer_size_in_mb" {
+  description = "Lambda processing buffer size in mb. It was noticed that the Lamba appeared to set this by default to `0.256` upon creation."
+  type        = number
+  default     = null
+}

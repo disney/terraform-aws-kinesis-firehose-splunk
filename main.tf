@@ -48,6 +48,13 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
           parameter_name  = "RoleArn"
           parameter_value = aws_iam_role.kinesis_firehose.arn
         }
+        dynamic "parameters" {
+          for_each = var.lambda_processing_buffer_size_in_mb != null ? [1] : []
+          content {
+            parameter_name  = "BufferSizeInMBs"
+            parameter_value = var.lambda_processing_buffer_size_in_mb
+          }
+        }
       }
     }
 
