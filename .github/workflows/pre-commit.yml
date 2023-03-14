@@ -16,7 +16,7 @@ jobs:
 
     - name: Terraform Init
       id: init
-      run: terraform init
+      run: terraform init -upgrade
 
     - name: Install tfsec
       id: tfsec
