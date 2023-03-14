@@ -18,11 +18,18 @@ repos: # pre-commit autoupdate
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.77.1
     hooks:
-      - id:  terraform_docs
-        args: ['--args=--indent 3']
       - id: terraform_fmt
         args: ['--args=-write=true']
-      - id: terraform_tflint
-      - id: checkov
-        args: ['--quiet']
       - id: terraform_tfsec
+
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: v0.16.0
+    hooks:
+      - id:  terraform_docs
+        args: ['--args=--indent 3', '--args=--config-file .terraform-docs.yml']
+
+  - repo: https://github.com/terraform-linters/tflint
+    rev: v0.45.0
+    hooks:
+      - id: terraform_tflint
+        args: ['--quiet']
