@@ -298,6 +298,7 @@ variable "object_lock_configuration_years" {
 variable "self_managed_hec_token" {
   description = "This variable allows for the user to have additional flexibility in how they pass in the HEC token. Perhaps they want to use a different tool than SSM or KMS encryption in their code base to encrypt it"
   type        = string
+  sensitive   = true
   default     = null
 }
 
