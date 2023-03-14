@@ -36,25 +36,26 @@ As of v6.1.0, there are two additional options available to pass in the HEC toke
 **By DEFAULT, for backwards compatibilty, it will default to using the KMS encrypted HEC token that this module previously required you to configure.**
 
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 |------|---------|
 | terraform | >= 1.0.0 |
+| archive | >= 2.3.0, < 3.0.0 |
 | aws | >= 4.0.0, < 5.0.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 |------|---------|
 | archive | 2.2.0 |
 | aws | 4.22.0 |
 
-## Modules
+### Modules
 
 No modules.
 
-## Resources
+### Resources
 
 | Name | Type |
 |------|------|
@@ -85,7 +86,7 @@ No modules.
 | [aws_iam_policy_document.lambda_policy_doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_kms_secrets.splunk_hec_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_secrets) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -115,7 +116,6 @@ No modules.
 | kinesis\_firehose\_iam\_policy\_name | Name of the IAM Policy attached to IAM Role for the Kinesis Firehose | `string` | `"KinesisFirehose-Policy"` | no |
 | kinesis\_firehose\_lambda\_role\_name | Name of IAM Role for Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format | `string` | `"KinesisFirehoseToLambaRole"` | no |
 | kinesis\_firehose\_role\_name | Name of IAM Role for the Kinesis Firehose | `string` | `"KinesisFirehoseRole"` | no |
-| kms\_key\_arn | arn of the KMS key you used to encrypt the hec\_token | `string` | `null` | no |
 | lambda\_function\_name | Name of the Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format | `string` | `"kinesis-firehose-transform"` | no |
 | lambda\_function\_timeout | The function execution time at which Lambda should terminate the function. | `number` | `180` | no |
 | lambda\_iam\_policy\_name | Name of the IAM policy that is attached to the IAM Role for the lambda transform function | `string` | `"Kinesis-Firehose-to-Splunk-Policy"` | no |
@@ -143,7 +143,7 @@ No modules.
 | subscription\_filter\_pattern | Filter pattern for the CloudWatch Log Group subscription to the Kinesis Firehose. See [this](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html) for filter pattern info. | `string` | `""` | no |
 | tags | Map of tags to put on the resource | `map(string)` | `{}` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|

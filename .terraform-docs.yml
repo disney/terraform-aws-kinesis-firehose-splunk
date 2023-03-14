@@ -2,6 +2,7 @@ settings:
   anchor: false
   html: false
   inject: true
+  indent: 3
 sort: 
   enabled: true 
   by: required

@@ -2,9 +2,6 @@ repos: # pre-commit autoupdate
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
-      - id: terraform_tflint
-        args:
-          - --args=--enable-rule=terraform_documented_variables
       - id: trailing-whitespace
       - id: check-added-large-files
       - id: check-ast
@@ -17,3 +14,14 @@ repos: # pre-commit autoupdate
       - id: requirements-txt-fixer
       - id: mixed-line-ending
         args: ["--fix=auto"] # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
+  
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.77.1
+    hooks:
+      - id:  terraform_docs
+        args: ['--args=--indent 3']
+      - id: terraform_fmt
+      - id: terraform_tflint
+      - id: checkov
+        args: ['--quiet']
+      - id: terraform_tfsec
