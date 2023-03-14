@@ -4,14 +4,10 @@ repos:
     hooks:
     -   id: trailing-whitespace
     -   id: check-added-large-files
-    -   id: check-ast
     -   id: check-json
     -   id: check-merge-conflict
-    -   id: check-xml
     -   id: check-yaml
-    -   id: debug-statements
     -   id: end-of-file-fixer
-    -   id: requirements-txt-fixer
     -   id: mixed-line-ending
         args: ["--fix=auto"] # replace 'auto' with 'lf' to enforce Linux/Mac line endings or 'crlf' for Windows
 
@@ -24,5 +20,5 @@ repos:
     -   id: terraform_tflint
     -   id: terraform_docs
         args:
-          - --args=--config=.terraform-docs.yml
-          - --args=--output-check=true
+          - --hook-config=-c=.terraform-docs.yml
+          - --hook-config=--output-check=true

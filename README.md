@@ -48,8 +48,8 @@ As of v6.1.0, there are two additional options available to pass in the HEC toke
 
 | Name | Version |
 |------|---------|
-| archive | 2.2.0 |
-| aws | 4.22.0 |
+| archive | 2.3.0 |
+| aws | 4.58.0 |
 
 ### Modules
 
