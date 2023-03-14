@@ -6,7 +6,7 @@ settings:
 sort:
   enabled: true
   by: required
-
+formatter: "markdown table"
 output:
   file: ./README.md
   mode: inject
