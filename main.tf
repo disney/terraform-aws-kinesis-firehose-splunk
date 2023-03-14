@@ -1,7 +1,6 @@
 locals {
   lambda_function_source_file = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
   lambda_function_handler     = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
-  hec_token                   = aws_ssm_parameter.hec_token[count.index].value != null ? aws_ssm_parameter.hec_token[count.index].value : var.self_managed_hec_token
 }
 
 # Kenisis firehose stream
@@ -30,7 +29,7 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 
   splunk_configuration {
     hec_endpoint               = var.hec_url
-    hec_token                  = data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] != null ? data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] : local.hec_token
+    hec_token                  = data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] != null ? data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] : var.self_managed_hec_token
     hec_acknowledgment_timeout = var.hec_acknowledgment_timeout
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
@@ -109,6 +108,7 @@ resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
 }
 
 resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
+  count                 = var.s3_bucket_object_lock_enabled == "Enabled" ? 1 : 0
   bucket                = aws_s3_bucket.kinesis_firehose_s3_bucket.id
   object_lock_enabled   = var.s3_bucket_object_lock_enabled
   expected_bucket_owner = var.expected_bucket_owner
@@ -415,15 +415,4 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter" {
   destination_arn = aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn
   log_group_name  = var.name_cloudwatch_logs_to_ship
   filter_pattern  = var.subscription_filter_pattern
-}
-
-resource "aws_ssm_parameter" "hec_token" {
-  count       = var.hec_token_ssm_parameter_value == null ? 0 : 1
-  name        = var.hec_token_ssm_parameter_name
-  description = var.hec_token_ssm_parameter_description
-  type        = var.hec_token_ssm_parameter_type
-  value       = var.hec_token_ssm_parameter_value
-  key_id      = var.hec_token_ssm_parameter_store_kms_key_id
-
-  tags = var.tags
 }

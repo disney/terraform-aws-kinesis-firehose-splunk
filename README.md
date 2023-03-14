@@ -81,7 +81,6 @@ No modules.
 | [aws_s3_bucket_public_access_block.kinesis_firehose_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.kinesis_firehose_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
 | [aws_s3_bucket_versioning.kinesis_firehose_s3_bucket_versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
-| [aws_ssm_parameter.hec_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
 | [archive_file.lambda_function](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
 | [aws_iam_policy_document.cloudwatch_to_fh_access_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kinesis_firehose_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -109,11 +108,6 @@ No modules.
 | hec\_acknowledgment\_timeout | The amount of time, in seconds between 180 and 600, that Kinesis Firehose waits to receive an acknowledgment from Splunk after it sends it data. | `number` | `300` | no |
 | hec\_endpoint\_type | Splunk HEC endpoint type; `Raw` or `Event` | `string` | `"Raw"` | no |
 | hec\_token | Splunk security token needed to submit data to Splunk | `string` | `null` | no |
-| hec\_token\_ssm\_parameter\_description | Description of the SSM parameter that stores the value of the HEC token | `string` | `null` | no |
-| hec\_token\_ssm\_parameter\_name | Name of the SSM parameter that stores the value of the HEC token | `string` | `null` | no |
-| hec\_token\_ssm\_parameter\_store\_kms\_key\_id | The ID of the KMS key used to encrypted the SecureString HEC token SSM parameter. Optional. | `string` | `null` | no |
-| hec\_token\_ssm\_parameter\_type | Type of the parameter. Valid types are String, StringList and SecureString | `string` | `null` | no |
-| hec\_token\_ssm\_parameter\_value | The HEC token value that will be put into the SSM Parameter | `string` | `null` | no |
 | hec\_url | Splunk Kinesis URL for submitting CloudWatch logs to splunk | `string` | n/a | yes |
 | kinesis\_firehose\_buffer | https://www.terraform.io/docs/providers/aws/r/kinesis_firehose_delivery_stream.html#buffer_size | `number` | `5` | no |
 | kinesis\_firehose\_buffer\_interval | Buffer incoming data for the specified period of time, in seconds, before delivering it to the destination | `number` | `300` | no |

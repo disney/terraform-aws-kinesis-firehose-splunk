@@ -301,36 +301,6 @@ variable "object_lock_configuration_years" {
   default     = null
 }
 
-variable "hec_token_ssm_parameter_name" {
-  description = "Name of the SSM parameter that stores the value of the HEC token"
-  type        = string
-  default     = null
-}
-
-variable "hec_token_ssm_parameter_description" {
-  description = "Description of the SSM parameter that stores the value of the HEC token"
-  type        = string
-  default     = null
-}
-
-variable "hec_token_ssm_parameter_type" {
-  description = "Type of the parameter. Valid types are String, StringList and SecureString"
-  type        = string
-  default     = null
-}
-
-variable "hec_token_ssm_parameter_store_kms_key_id" {
-  description = "The ID of the KMS key used to encrypted the SecureString HEC token SSM parameter. Optional."
-  type        = string
-  default     = null
-}
-
-variable "hec_token_ssm_parameter_value" {
-  description = "The HEC token value that will be put into the SSM Parameter"
-  type        = string
-  default     = null
-}
-
 variable "self_managed_hec_token" {
   description = "This variable allows for the user to have additional flexibility in how they pass in the HEC token. Perhaps they want to use a different tool than SSM or KMS encryption in their code base to encrypt it"
   type        = string
