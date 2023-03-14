@@ -16,7 +16,7 @@ jobs:
 
     - name: terraform init
       id: init
-      run: terraform init -upgrade
+      run: terraform init
 
     - name: Install tflint
       id: tflint
@@ -25,5 +25,13 @@ jobs:
     - name: Install tfsec
       id: tfsec
       run: curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
+    - name: Install terraform-docs
+      id: terraformd-docs
+      run: |
+        curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
+        tar -xzf terraform-docs.tar.gz
+        chmod +x terraform-docs
+        mv terraform-docs /some-dir-in-your-PATH/terraform-docs
 
     - uses: pre-commit/action@v3.0.0
