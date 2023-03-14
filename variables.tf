@@ -149,12 +149,6 @@ variable "lambda_iam_policy_name" {
   default     = "Kinesis-Firehose-to-Splunk-Policy"
 }
 
-variable "kms_key_arn" {
-  description = "arn of the KMS key you used to encrypt the hec_token"
-  type        = string
-  default     = null
-}
-
 variable "kinesis_firehose_iam_policy_name" {
   description = "Name of the IAM Policy attached to IAM Role for the Kinesis Firehose"
   default     = "KinesisFirehose-Policy"

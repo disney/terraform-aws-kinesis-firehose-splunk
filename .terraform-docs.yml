@@ -2,6 +2,9 @@ settings:
   anchor: false
   html: false
   inject: true
+sort: 
+  enabled: true 
+  by: required
 
 output:
   file: ./README.md

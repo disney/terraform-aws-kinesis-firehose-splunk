@@ -90,6 +90,10 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | arn\_cloudwatch\_logs\_to\_ship | arn of the CloudWatch Log Group that you want to ship to Splunk. | `string` | n/a | yes |
+| hec\_url | Splunk Kinesis URL for submitting CloudWatch logs to splunk | `string` | n/a | yes |
+| name\_cloudwatch\_logs\_to\_ship | name of the CloudWatch Log Group that you want to ship to Splunk. | `string` | n/a | yes |
+| region | The region of AWS you want to work in, such as us-west-2 or us-east-1 | `string` | n/a | yes |
+| s3\_bucket\_name | Name of the s3 bucket Kinesis Firehose uses for backups | `string` | n/a | yes |
 | aws\_s3\_bucket\_versioning | Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets. | `string` | `null` | no |
 | cloudwach\_log\_group\_kms\_key\_id | KMS key ID of the key to use to encrypt the Cloudwatch log group | `string` | `null` | no |
 | cloudwatch\_log\_filter\_name | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | `string` | `"KinesisSubscriptionFilter"` | no |
@@ -106,7 +110,6 @@ No modules.
 | hec\_acknowledgment\_timeout | The amount of time, in seconds between 180 and 600, that Kinesis Firehose waits to receive an acknowledgment from Splunk after it sends it data. | `number` | `300` | no |
 | hec\_endpoint\_type | Splunk HEC endpoint type; `Raw` or `Event` | `string` | `"Raw"` | no |
 | hec\_token | Splunk security token needed to submit data to Splunk | `string` | `null` | no |
-| hec\_url | Splunk Kinesis URL for submitting CloudWatch logs to splunk | `string` | n/a | yes |
 | kinesis\_firehose\_buffer | https://www.terraform.io/docs/providers/aws/r/kinesis_firehose_delivery_stream.html#buffer_size | `number` | `5` | no |
 | kinesis\_firehose\_buffer\_interval | Buffer incoming data for the specified period of time, in seconds, before delivering it to the destination | `number` | `300` | no |
 | kinesis\_firehose\_iam\_policy\_name | Name of the IAM Policy attached to IAM Role for the Kinesis Firehose | `string` | `"KinesisFirehose-Policy"` | no |
@@ -123,17 +126,14 @@ No modules.
 | local\_lambda\_file | The absolute path to an existing custom Lambda script | `string` | `null` | no |
 | local\_lambda\_file\_handler | Allows you to specify Lambda handler if using a local custom file for Lambda function | `string` | `null` | no |
 | log\_stream\_name | Name of the CloudWatch log stream for Kinesis Firehose CloudWatch log group | `string` | `"SplunkDelivery"` | no |
-| name\_cloudwatch\_logs\_to\_ship | name of the CloudWatch Log Group that you want to ship to Splunk. | `string` | n/a | yes |
 | nodejs\_runtime | Runtime version of nodejs for Lambda function | `string` | `"nodejs12.x"` | no |
 | object\_lock\_configuration\_days | Required if years is not specified. Number of days that you want to specify for the default retention period | `number` | `null` | no |
 | object\_lock\_configuration\_mode | Default Object Lock retention mode you want to apply to new objects placed in the specified bucket. Valid values: COMPLIANCE, GOVERNANCE | `string` | `null` | no |
 | object\_lock\_configuration\_token | S3 bucket object lock configuration token | `string` | `null` | no |
 | object\_lock\_configuration\_years | Required if days is not specified. Number of years that you want to specify for the default retention period | `number` | `null` | no |
-| region | The region of AWS you want to work in, such as us-west-2 or us-east-1 | `string` | n/a | yes |
 | s3\_backup\_mode | Defines how documents should be delivered to Amazon S3. Valid values are FailedEventsOnly and AllEvents. | `string` | `"FailedEventsOnly"` | no |
 | s3\_bucket\_block\_public\_access\_enabled | Set to 1 if you would like to add block public access settings for the s3 bucket Kinesis Firehose uses for backups | `number` | `0` | no |
 | s3\_bucket\_key\_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `null` | no |
-| s3\_bucket\_name | Name of the s3 bucket Kinesis Firehose uses for backups | `string` | n/a | yes |
 | s3\_bucket\_object\_lock\_enabled | Indicates whether this bucket has an Object Lock configuration enabled. Valid values: Enabled. | `string` | `null` | no |
 | s3\_bucket\_server\_side\_encryption\_algorithm | (Required) Server-side encryption algorithm to use. Valid values are AES256 and aws:kms | `string` | `"AES256"` | no |
 | s3\_bucket\_server\_side\_encryption\_kms\_master\_key\_id | AWS KMS master key ID used for the SSE-KMS encryption. This can only be used when you set the value of sse\_algorithm as aws:kms. The default aws/s3 AWS KMS master key is used if this element is absent while the sse\_algorithm is aws:kms | `string` | `null` | no |

@@ -1,10 +1,12 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
-## 6.1.0
+## 7.0.0
+ * **Breaking Change** - Removed `var.kms_key_arn`
  * Update README.md with `terraform-docs`
  * Created Github actions pipelines
  * Support for SSE for the Kinesis Firehose
  * Added `reserved_concurrent_executions` parameter to Lambda function
+ * Added `var.lambda_processing_buffer_size_in_mb` to optionally configure the parameter `BufferSizeInMBs` in the Kinesis Firehose
  * Updated all variables to specify `type`
  * Require less than version `5.0.0` of the AWS provider
  * Created NOTICE file
