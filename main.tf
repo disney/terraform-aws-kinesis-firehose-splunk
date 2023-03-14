@@ -29,7 +29,7 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 
   splunk_configuration {
     hec_endpoint               = var.hec_url
-    hec_token                  = var.hec_token != null ? data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] : var.self_managed_hec_token
+    hec_token                  = var.hec_token != null ? module.hec_token_kms_secret[0].hec_token_kms_secret : var.self_managed_hec_token
     hec_acknowledgment_timeout = var.hec_acknowledgment_timeout
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
@@ -66,6 +66,13 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
   }
 
   tags = var.tags
+}
+
+module "hec_token_kms_secret" {
+  count              = var.hec_token != null ? 1 : 0
+  source             = "./modules/kms_secrets"
+  hec_token          = var.hec_token
+  encryption_context = var.encryption_context
 }
 
 # S3 Bucket for Kinesis Firehose s3_backup_mode
@@ -142,15 +149,6 @@ resource "aws_cloudwatch_log_group" "kinesis_logs" {
 resource "aws_cloudwatch_log_stream" "kinesis_logs" {
   name           = var.log_stream_name
   log_group_name = aws_cloudwatch_log_group.kinesis_logs.name
-}
-
-# handle the sensitivity of the hec_token variable
-data "aws_kms_secrets" "splunk_hec_token" {
-  secret {
-    name    = "hec_token"
-    payload = var.hec_token
-    context = var.encryption_context
-  }
 }
 
 # Role for the transformation Lambda function attached to the kinesis stream

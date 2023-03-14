@@ -29,8 +29,12 @@ module "kinesis_firehose" {
 ```
 Please see the [S3 Life Cycle Rule example](examples/s3_bucket_lifecycle_rule.md) if you wish to configure them.
 
-### v6.1.0 Passing in Splunk HEC Token
-As of v6.1.0, there are two additional options available to pass in the HEC token:
+## Upgrading from v6.0.0 to v7.0.0
+
+If you choose to change the way you pass in your HEC token (see section below) when upgrading from v6.0.0 to v7.0.0, when you run `terraform apply`, you may notice that Terraform reports that it is going to make changes to resources such as IAM policies when nothing has changed with them. Others have experienced this issue as well, please see this [issue](https://github.com/hashicorp/terraform/issues/32849).
+
+### v7.0.0 Passing in Splunk HEC Token
+As of v7.0.0, there are two additional options available to pass in the HEC token:
   - You may pass it in via the new variable called `var.self_managed_hec_token` which gives you the flexibility to perhaps encrypt the token in your repo with a different tool of your choice, for example AWS SSM Parameter Store or [SOPS](https://github.com/mozilla/sops).
 
 **By DEFAULT, for backwards compatibilty, it will default to using the KMS encrypted HEC token that this module previously required you to configure.**
@@ -80,11 +84,12 @@ As of v6.1.0, there are two additional options available to pass in the HEC toke
 | [aws_iam_policy_document.cloudwatch_to_fh_access_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kinesis_firehose_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.lambda_policy_doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_kms_secrets.splunk_hec_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_secrets) | data source |
 
 ### Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| hec\_token\_kms\_secret | ./modules/kms_secrets | n/a |
 
 ### Inputs
 

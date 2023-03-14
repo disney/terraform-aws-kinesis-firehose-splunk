@@ -26,3 +26,6 @@ output:
     <!-- BEGIN_TF_DOCS -->
     {{ .Content }}
     <!-- END_TF_DOCS -->
+recursive:
+  enabled: true
+  path: modules
