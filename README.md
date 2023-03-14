@@ -23,8 +23,7 @@ module "kinesis_firehose" {
   s3_bucket_name               = "<mybucketname>"
 
   ### HEC Token ###
-  One of var.hec_token (default) OR var.hec_token_ssm_parameter_* for SSM Paremeter Store, OR var.self_managed_hec_token
-  must be used to pass in the Splunk HEC token.
+  One of var.hec_token (default) OR var.self_managed_hec_token must be used to pass in the Splunk HEC token.
 }
 
 ```
@@ -32,10 +31,9 @@ Please see the [S3 Life Cycle Rule example](examples/s3_bucket_lifecycle_rule.md
 
 ### v6.1.0 Passing in Splunk HEC Token
 As of v6.1.0, there are two additional options available to pass in the HEC token:
-  - You may put the HEC token in the SSM parameter store by using the `var.hec_token_ssm_parameter_*` set of variables
-  - You may pass it in via the new variable called `var.self_managed_hec_token` which gives you the flexibility to perhaps encrypt the token in your repo with a different tool of your choice, for example [SOPS](https://github.com/mozilla/sops)
+  - You may pass it in via the new variable called `var.self_managed_hec_token` which gives you the flexibility to perhaps encrypt the token in your repo with a different tool of your choice, for example AWS SSM Parameter Store or [SOPS](https://github.com/mozilla/sops).
 
-**By DEFAULT, for backwards compatibilty, it will default to using the KMS encrypted HEC token that this module previously required you to configure.** Next it will use the HEC token configured in the SSM parameter store, if it is present, and lastly it will use the HEC token passed in via `var.self_managed_hec_token`.
+**By DEFAULT, for backwards compatibilty, it will default to using the KMS encrypted HEC token that this module previously required you to configure.**
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

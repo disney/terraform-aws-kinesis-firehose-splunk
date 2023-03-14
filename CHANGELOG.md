@@ -9,7 +9,7 @@
  * Require less than version `5.0.0` of the AWS provider
  * Created NOTICE file
  * Fix [#19](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/18) - Support for S3 bucket Versioning, support for Object Locking, support for s3 bucket lifecycles
- * Fix [#18](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/18) - Allow the HEC token to be passed as a plaintext or as a Parameter Store
+ * Fix [#18](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/18) - Allow the HEC token to be passed in via a new variable, `var.managed_hec_token`, allowing the user to encrypt it as they wish, perhaps via SSM Parameter Store or [SOPS](https://github.com/mozilla/sops)
 
 ## 6.0.0
  * Requires `>= 4.0.0` of the AWS provider; merged in [S3 changes](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/15)
