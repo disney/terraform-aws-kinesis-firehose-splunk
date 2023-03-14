@@ -29,7 +29,7 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
 
   splunk_configuration {
     hec_endpoint               = var.hec_url
-    hec_token                  = data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] != null ? data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] : var.self_managed_hec_token
+    hec_token                  = var.hec_token != null ? data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"] : var.self_managed_hec_token
     hec_acknowledgment_timeout = var.hec_acknowledgment_timeout
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
@@ -99,7 +99,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_
     apply_server_side_encryption_by_default {
       kms_master_key_id = var.s3_bucket_server_side_encryption_kms_master_key_id
       sse_algorithm     = var.s3_bucket_server_side_encryption_algorithm
-
     }
   }
 }
@@ -147,13 +146,10 @@ resource "aws_cloudwatch_log_stream" "kinesis_logs" {
 
 # handle the sensitivity of the hec_token variable
 data "aws_kms_secrets" "splunk_hec_token" {
-  dynamic "secret" {
-    for_each = var.hec_token == null ? [] : [1]
-    content {
-      name    = "hec_token"
-      payload = var.hec_token
-      context = var.encryption_context
-    }
+  secret {
+    name    = "hec_token"
+    payload = var.hec_token
+    context = var.encryption_context
   }
 }
 
@@ -176,7 +172,6 @@ resource "aws_iam_role" "kinesis_firehose_lambda" {
   "Version": "2012-10-17"
 }
 POLICY
-
 
   tags = var.tags
 }
@@ -302,7 +297,6 @@ resource "aws_iam_role" "kinesis_firehose" {
 }
 POLICY
 
-
   tags = var.tags
 }
 
@@ -378,7 +372,6 @@ resource "aws_iam_role" "cloudwatch_to_firehose_trust" {
   "Version": "2012-10-17"
 }
 ROLE
-
 }
 
 data "aws_iam_policy_document" "cloudwatch_to_fh_access_policy" {
