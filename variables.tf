@@ -9,7 +9,7 @@ variable "hec_url" {
 }
 
 variable "hec_token" {
-  description = "Splunk security token needed to submit data to Splunk"
+  description = "Splunk security token needed to submit data to Splunk. Required if var.self_managed_hec_token is not specified."
   type        = string
   default     = null
 }
@@ -296,7 +296,7 @@ variable "object_lock_configuration_years" {
 }
 
 variable "self_managed_hec_token" {
-  description = "This variable allows for the user to have additional flexibility in how they pass in the HEC token. Perhaps they want to use a different tool than SSM or KMS encryption in their code base to encrypt it"
+  description = "This variable allows for the user to have additional flexibility in how they pass in the HEC token. Perhaps they want to use a different tool than SSM or KMS encryption in their code base to encrypt it. Required if var.hec_token is not specified."
   type        = string
   sensitive   = true
   default     = null

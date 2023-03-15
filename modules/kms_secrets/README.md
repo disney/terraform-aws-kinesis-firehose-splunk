@@ -5,13 +5,14 @@
 
 | Name | Version |
 |------|---------|
+| terraform | >= 1.0.0 |
 | aws | >= 4.0.0, < 5.0.0 |
 
 ### Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 4.0.0, < 5.0.0 |
+| aws | 4.58.0 |
 
 ### Resources
 
