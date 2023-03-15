@@ -18,9 +18,18 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
     compression_format = var.s3_compression_format
   }
 
+  dynamic "server_side_encryption" {
+    for_each = var.firehose_server_side_encryption_enabled == true ? [1] : []
+    content {
+      enabled  = var.firehose_server_side_encryption_enabled
+      key_type = var.firehose_server_side_encryption_key_type
+      key_arn  = var.firehose_server_side_encryption_key_arn
+    }
+  }
+
   splunk_configuration {
     hec_endpoint               = var.hec_url
-    hec_token                  = data.aws_kms_secrets.splunk_hec_token.plaintext["hec_token"]
+    hec_token                  = var.hec_token != null ? module.hec_token_kms_secret[0].hec_token_kms_secret : var.self_managed_hec_token
     hec_acknowledgment_timeout = var.hec_acknowledgment_timeout
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
@@ -39,6 +48,13 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
           parameter_name  = "RoleArn"
           parameter_value = aws_iam_role.kinesis_firehose.arn
         }
+        dynamic "parameters" {
+          for_each = var.lambda_processing_buffer_size_in_mb != null ? [1] : []
+          content {
+            parameter_name  = "BufferSizeInMBs"
+            parameter_value = var.lambda_processing_buffer_size_in_mb
+          }
+        }
       }
     }
 
@@ -52,11 +68,28 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
   tags = var.tags
 }
 
+module "hec_token_kms_secret" {
+  count              = var.hec_token != null ? 1 : 0
+  source             = "./modules/kms_secrets"
+  hec_token          = var.hec_token
+  encryption_context = var.encryption_context
+}
+
 # S3 Bucket for Kinesis Firehose s3_backup_mode
 resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
-  bucket = var.s3_bucket_name
+  bucket              = var.s3_bucket_name
+  object_lock_enabled = var.s3_bucket_object_lock_enabled
 
   tags = var.tags
+}
+
+resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
+  count  = var.aws_s3_bucket_versioning == null ? 0 : 1
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  versioning_configuration {
+    status = var.aws_s3_bucket_versioning
+  }
 }
 
 resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
@@ -68,8 +101,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
 
   rule {
+    bucket_key_enabled = var.s3_bucket_key_enabled
+
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      kms_master_key_id = var.s3_bucket_server_side_encryption_kms_master_key_id
+      sse_algorithm     = var.s3_bucket_server_side_encryption_algorithm
     }
   }
 }
@@ -84,10 +120,27 @@ resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
+  count                 = var.s3_bucket_object_lock_enabled == "Enabled" ? 1 : 0
+  bucket                = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+  object_lock_enabled   = var.s3_bucket_object_lock_enabled
+  expected_bucket_owner = var.expected_bucket_owner
+  token                 = var.object_lock_configuration_token
+
+  rule {
+    default_retention {
+      mode  = var.object_lock_configuration_mode
+      days  = var.object_lock_configuration_days
+      years = var.object_lock_configuration_years
+    }
+  }
+}
+
 # Cloudwatch logging group for Kinesis Firehose
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
   retention_in_days = var.cloudwatch_log_retention
+  kms_key_id        = var.cloudwach_log_group_kms_key_id
 
   tags = var.tags
 }
@@ -96,16 +149,6 @@ resource "aws_cloudwatch_log_group" "kinesis_logs" {
 resource "aws_cloudwatch_log_stream" "kinesis_logs" {
   name           = var.log_stream_name
   log_group_name = aws_cloudwatch_log_group.kinesis_logs.name
-}
-
-# handle the sensitivity of the hec_token variable
-data "aws_kms_secrets" "splunk_hec_token" {
-  secret {
-    name    = "hec_token"
-    payload = var.hec_token
-
-    context = var.encryption_context
-  }
 }
 
 # Role for the transformation Lambda function attached to the kinesis stream
@@ -127,7 +170,6 @@ resource "aws_iam_role" "kinesis_firehose_lambda" {
   "Version": "2012-10-17"
 }
 POLICY
-
 
   tags = var.tags
 }
@@ -205,14 +247,22 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_role_attachment" {
 # Create the lambda function
 # The lambda function to transform data from compressed format in Cloudwatch to something Splunk can handle (uncompressed)
 resource "aws_lambda_function" "firehose_lambda_transform" {
-  function_name    = var.lambda_function_name
-  description      = "Transform data from CloudWatch format to Splunk compatible format"
-  filename         = data.archive_file.lambda_function.output_path
-  role             = aws_iam_role.kinesis_firehose_lambda.arn
-  handler          = local.lambda_function_handler
-  source_code_hash = data.archive_file.lambda_function.output_base64sha256
-  runtime          = var.nodejs_runtime
-  timeout          = var.lambda_function_timeout
+  function_name                  = var.lambda_function_name
+  description                    = "Transform data from CloudWatch format to Splunk compatible format"
+  filename                       = data.archive_file.lambda_function.output_path
+  role                           = aws_iam_role.kinesis_firehose_lambda.arn
+  handler                        = local.lambda_function_handler
+  source_code_hash               = data.archive_file.lambda_function.output_base64sha256
+  runtime                        = var.nodejs_runtime
+  timeout                        = var.lambda_function_timeout
+  reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
+
+  dynamic "tracing_config" {
+    for_each = var.lambda_tracing_config == null ? [] : [1]
+    content {
+      mode = var.lambda_tracing_config
+    }
+  }
 
   tags = var.tags
 }
@@ -244,7 +294,6 @@ resource "aws_iam_role" "kinesis_firehose" {
   ]
 }
 POLICY
-
 
   tags = var.tags
 }
@@ -321,7 +370,6 @@ resource "aws_iam_role" "cloudwatch_to_firehose_trust" {
   "Version": "2012-10-17"
 }
 ROLE
-
 }
 
 data "aws_iam_policy_document" "cloudwatch_to_fh_access_policy" {

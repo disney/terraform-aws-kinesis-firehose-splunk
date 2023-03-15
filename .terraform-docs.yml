@@ -1,0 +1,31 @@
+settings:
+  anchor: false
+  html: false
+  inject: true
+  indent: 3
+sort:
+  enabled: true
+  by: required
+formatter: "markdown table"
+content: |-
+  {{ .Requirements }}
+
+  {{ .Providers }}
+
+  {{ .Resources }}
+
+  {{ .Modules }}
+
+  {{ .Inputs }}
+
+  {{ .Outputs }}
+output:
+  file: README.md
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+recursive:
+  enabled: true
+  path: modules
