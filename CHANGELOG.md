@@ -1,5 +1,12 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v8.0.0 - **Breaking Changes**
+ * Requires `>= 5.0.0, < 6.0.0` of the terraform aws [provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+ * Updated default value of `var.nodejs_runtime` to `nodejs18.x`
+ * Updated `files\kinesis-firehose-cloudwatch-logs-processor.js` to latest version of AWS blueprint function code
+ * Fix the resource `aws_kinesis_firehose_delivery_stream` to make it AWS provider v5 compliant
+ * Improved formatting of README.md
+
 ## 7.0.0
  * **Breaking Change** - Removed `var.kms_key_arn`
  * Update README.md with `terraform-docs`

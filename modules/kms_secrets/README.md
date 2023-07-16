@@ -5,14 +5,18 @@
 
 | Name | Version |
 |------|---------|
-| terraform | >= 1.0.0 |
-| aws | >= 4.0.0, < 5.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0.0, < 5.0.0 |
 
 ### Providers
 
 | Name | Version |
 |------|---------|
-| aws | 4.58.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.58.0 |
+
+### Modules
+
+No modules.
 
 ### Resources
 
@@ -20,20 +24,16 @@
 |------|------|
 | [aws_kms_secrets.splunk_hec_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_secrets) | data source |
 
-### Modules
-
-No modules.
-
 ### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| encryption\_context | aws\_kms\_secrets encryption context | `map(string)` | `{}` | no |
-| hec\_token | Splunk security token needed to submit data to Splunk | `string` | `null` | no |
+| <a name="input_encryption_context"></a> [encryption\_context](#input\_encryption\_context) | aws\_kms\_secrets encryption context | `map(string)` | `{}` | no |
+| <a name="input_hec_token"></a> [hec\_token](#input\_hec\_token) | Splunk security token needed to submit data to Splunk | `string` | `null` | no |
 
 ### Outputs
 
 | Name | Description |
 |------|-------------|
-| hec\_token\_kms\_secret | n/a |
+| <a name="output_hec_token_kms_secret"></a> [hec\_token\_kms\_secret](#output\_hec\_token\_kms\_secret) | n/a |
 <!-- END_TF_DOCS -->

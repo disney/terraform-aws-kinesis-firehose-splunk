@@ -16,7 +16,7 @@ variable "hec_token" {
 
 variable "nodejs_runtime" {
   description = "Runtime version of nodejs for Lambda function"
-  default     = "nodejs12.x"
+  default     = "nodejs18.x"
   type        = string
 }
 

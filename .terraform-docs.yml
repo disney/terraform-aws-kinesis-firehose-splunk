@@ -1,20 +1,19 @@
 settings:
-  anchor: false
-  html: false
+  anchor: true
   inject: true
   indent: 3
+formatter: "markdown table"
 sort:
   enabled: true
   by: required
-formatter: "markdown table"
 content: |-
   {{ .Requirements }}
 
   {{ .Providers }}
 
-  {{ .Resources }}
-
   {{ .Modules }}
+
+  {{ .Resources }}
 
   {{ .Inputs }}
 

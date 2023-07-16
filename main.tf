@@ -9,15 +9,6 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
   name        = var.firehose_name
   destination = "splunk"
 
-  s3_configuration {
-    role_arn           = aws_iam_role.kinesis_firehose.arn
-    prefix             = var.s3_prefix
-    bucket_arn         = aws_s3_bucket.kinesis_firehose_s3_bucket.arn
-    buffer_size        = var.kinesis_firehose_buffer
-    buffer_interval    = var.kinesis_firehose_buffer_interval
-    compression_format = var.s3_compression_format
-  }
-
   dynamic "server_side_encryption" {
     for_each = var.firehose_server_side_encryption_enabled == true ? [1] : []
     content {
@@ -33,6 +24,15 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
     hec_acknowledgment_timeout = var.hec_acknowledgment_timeout
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
+
+    s3_configuration {
+      role_arn           = aws_iam_role.kinesis_firehose.arn
+      prefix             = var.s3_prefix
+      bucket_arn         = aws_s3_bucket.kinesis_firehose_s3_bucket.arn
+      buffering_size     = var.kinesis_firehose_buffer
+      buffering_interval = var.kinesis_firehose_buffer_interval
+      compression_format = var.s3_compression_format
+    }
 
     processing_configuration {
       enabled = "true"
