@@ -6,6 +6,8 @@
  * Updated `files\kinesis-firehose-cloudwatch-logs-processor.js` to latest version of AWS blueprint function code
  * Fix the resource `aws_kinesis_firehose_delivery_stream` to make it AWS provider v5 compliant
  * Fix s3 bucket ownership with new resource `aws_s3_bucket_ownership_controls`
+ * Added `var.lambda_processing_buffer_interval_in_seconds`
+ * Set default to `0.256` for `var.lambda_processing_buffer_size_in_mb`
  * Improved formatting of README.md
 
 ## 7.0.0

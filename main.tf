@@ -35,11 +35,10 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
     }
 
     processing_configuration {
-      enabled = "true"
+      enabled = var.firehose_processing_enabled
 
       processors {
         type = "Lambda"
-
         parameters {
           parameter_name  = "LambdaArn"
           parameter_value = "${aws_lambda_function.firehose_lambda_transform.arn}:$LATEST"
@@ -53,6 +52,13 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
           content {
             parameter_name  = "BufferSizeInMBs"
             parameter_value = var.lambda_processing_buffer_size_in_mb
+          }
+        }
+        dynamic "parameters" {
+          for_each = var.lambda_processing_buffer_interval_in_seconds != null ? [1] : []
+          content {
+            parameter_name  = "BufferIntervalInSeconds"
+            parameter_value = var.lambda_processing_buffer_interval_in_seconds
           }
         }
       }

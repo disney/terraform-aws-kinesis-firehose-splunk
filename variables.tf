@@ -303,7 +303,19 @@ variable "self_managed_hec_token" {
 }
 
 variable "lambda_processing_buffer_size_in_mb" {
-  description = "Lambda processing buffer size in mb. It was noticed that the Lamba appeared to set this by default to `0.256` upon creation."
+  description = "Lambda processing buffer size in mb."
   type        = number
-  default     = null
+  default     = 0.5
+}
+
+variable "lambda_processing_buffer_interval_in_seconds" {
+  description = "Lambda processing buffer interval in seconds."
+  type        = number
+  default     = 61
+}
+
+variable "firehose_processing_enabled" {
+  description = "Kinesis firehose processing enabled"
+  type        = bool
+  default     = true
 }

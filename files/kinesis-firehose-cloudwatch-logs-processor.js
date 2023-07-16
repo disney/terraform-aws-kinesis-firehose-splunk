@@ -49,7 +49,12 @@
 // 8) The retry count for intermittent failures during re-ingestion is set 20 attempts. If you wish to retry fewer number
 //    of times for intermittent failures you can lower this value.
 
-const AWS = require('aws-sdk')
+const {
+        Firehose
+      } = require("@aws-sdk/client-firehose"),
+      {
+        Kinesis
+      } = require("@aws-sdk/client-kinesis");
 const zlib = require('zlib')
 const assert = require('assert').strict
 
@@ -241,7 +246,7 @@ module.exports.handler = async function (event, context) {
   if (recordListsToReingest.length > 0) {
     let recordsReingestedSoFar = 0
     const clientArgs = { region: region }
-    const client = isSas ? new AWS.Kinesis(clientArgs) : new AWS.Firehose(clientArgs)
+    const client = isSas ? new Kinesis(clientArgs) : new Firehose(clientArgs)
     const maxBatchSize = 500
     const flattenedList = recordListsToReingest.flat()
     for (let i = 0; i < flattenedList.length; i += maxBatchSize) {
