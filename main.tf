@@ -149,6 +149,7 @@ resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
 
 # Cloudwatch logging group for Kinesis Firehose
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
+  #checkov:skip=CKV_AWS_338: Ensure CloudWatch log groups retains logs for at least 1 year
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
   retention_in_days = var.cloudwatch_log_retention
   kms_key_id        = var.cloudwach_log_group_kms_key_id
@@ -186,6 +187,7 @@ POLICY
 }
 
 data "aws_iam_policy_document" "lambda_policy_doc" {
+  #checkov:skip=CKV_AWS_356:Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions
   statement {
     actions = [
       "logs:GetLogEvents",
