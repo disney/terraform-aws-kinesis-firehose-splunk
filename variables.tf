@@ -305,13 +305,13 @@ variable "self_managed_hec_token" {
 variable "lambda_processing_buffer_size_in_mb" {
   description = "Lambda processing buffer size in mb."
   type        = number
-  default     = 0.5
+  default     = 0.256
 }
 
 variable "lambda_processing_buffer_interval_in_seconds" {
   description = "Lambda processing buffer interval in seconds."
   type        = number
-  default     = 61
+  default     = 61 # If 60 is the default, it is not stored in state and there are perpetual changes in the plan
 }
 
 variable "firehose_processing_enabled" {
