@@ -93,9 +93,20 @@ resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
 }
 
 resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
+  depends_on = [aws_s3_bucket_ownership_controls.kinesis_firehose_s3_bucket]
+
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
   acl    = "private"
 }
+
+resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket

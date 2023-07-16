@@ -5,6 +5,7 @@
  * Updated default value of `var.nodejs_runtime` to `nodejs18.x`
  * Updated `files\kinesis-firehose-cloudwatch-logs-processor.js` to latest version of AWS blueprint function code
  * Fix the resource `aws_kinesis_firehose_delivery_stream` to make it AWS provider v5 compliant
+ * Fix s3 bucket ownership with new resource `aws_s3_bucket_ownership_controls`
  * Improved formatting of README.md
 
 ## 7.0.0
