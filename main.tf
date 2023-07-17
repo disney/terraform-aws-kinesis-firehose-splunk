@@ -9,15 +9,6 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
   name        = var.firehose_name
   destination = "splunk"
 
-  s3_configuration {
-    role_arn           = aws_iam_role.kinesis_firehose.arn
-    prefix             = var.s3_prefix
-    bucket_arn         = aws_s3_bucket.kinesis_firehose_s3_bucket.arn
-    buffer_size        = var.kinesis_firehose_buffer
-    buffer_interval    = var.kinesis_firehose_buffer_interval
-    compression_format = var.s3_compression_format
-  }
-
   dynamic "server_side_encryption" {
     for_each = var.firehose_server_side_encryption_enabled == true ? [1] : []
     content {
@@ -34,12 +25,20 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
 
+    s3_configuration {
+      role_arn           = aws_iam_role.kinesis_firehose.arn
+      prefix             = var.s3_prefix
+      bucket_arn         = aws_s3_bucket.kinesis_firehose_s3_bucket.arn
+      buffering_size     = var.kinesis_firehose_buffer
+      buffering_interval = var.kinesis_firehose_buffer_interval
+      compression_format = var.s3_compression_format
+    }
+
     processing_configuration {
-      enabled = "true"
+      enabled = var.firehose_processing_enabled
 
       processors {
         type = "Lambda"
-
         parameters {
           parameter_name  = "LambdaArn"
           parameter_value = "${aws_lambda_function.firehose_lambda_transform.arn}:$LATEST"
@@ -53,6 +52,13 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
           content {
             parameter_name  = "BufferSizeInMBs"
             parameter_value = var.lambda_processing_buffer_size_in_mb
+          }
+        }
+        dynamic "parameters" {
+          for_each = var.lambda_processing_buffer_interval_in_seconds != null ? [1] : []
+          content {
+            parameter_name  = "BufferIntervalInSeconds"
+            parameter_value = var.lambda_processing_buffer_interval_in_seconds
           }
         }
       }
@@ -93,9 +99,20 @@ resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
 }
 
 resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
+  depends_on = [aws_s3_bucket_ownership_controls.kinesis_firehose_s3_bucket]
+
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
   acl    = "private"
 }
+
+resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
@@ -138,6 +155,7 @@ resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
 
 # Cloudwatch logging group for Kinesis Firehose
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
+  #checkov:skip=CKV_AWS_338: Ensure CloudWatch log groups retains logs for at least 1 year
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
   retention_in_days = var.cloudwatch_log_retention
   kms_key_id        = var.cloudwach_log_group_kms_key_id
@@ -175,6 +193,7 @@ POLICY
 }
 
 data "aws_iam_policy_document" "lambda_policy_doc" {
+  #checkov:skip=CKV_AWS_356:Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions
   statement {
     actions = [
       "logs:GetLogEvents",

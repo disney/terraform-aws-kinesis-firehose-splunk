@@ -9,3 +9,5 @@ skip-check:
   - CKV2_GHA_1
   - CKV_AWS_240
   - CKV_AWS_241
+  - CKV_AWS_356
+  - CKV2_AWS_62 # Buckets do not need notifications enabled

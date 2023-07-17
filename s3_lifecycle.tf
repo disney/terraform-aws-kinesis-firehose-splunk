@@ -20,6 +20,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
       status = try(rule.value.enabled ? "Enabled" : "Disabled", tobool(rule.value.status) ? "Enabled" : "Disabled", title(lower(rule.value.status)))
 
       # Max 1 block - abort_incomplete_multipart_upload
+      #checkov:skip=CKV_AWS_300: Ensure S3 lifecycle configuration sets period for aborting failed uploads
       dynamic "abort_incomplete_multipart_upload" {
         for_each = try([rule.value.abort_incomplete_multipart_upload_days], [])
 

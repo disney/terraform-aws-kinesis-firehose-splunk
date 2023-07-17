@@ -16,7 +16,7 @@ variable "hec_token" {
 
 variable "nodejs_runtime" {
   description = "Runtime version of nodejs for Lambda function"
-  default     = "nodejs12.x"
+  default     = "nodejs18.x"
   type        = string
 }
 
@@ -303,7 +303,19 @@ variable "self_managed_hec_token" {
 }
 
 variable "lambda_processing_buffer_size_in_mb" {
-  description = "Lambda processing buffer size in mb. It was noticed that the Lamba appeared to set this by default to `0.256` upon creation."
+  description = "Lambda processing buffer size in mb."
   type        = number
-  default     = null
+  default     = 0.256
+}
+
+variable "lambda_processing_buffer_interval_in_seconds" {
+  description = "Lambda processing buffer interval in seconds."
+  type        = number
+  default     = 61 # If 60 is the default, it is not stored in state and there are perpetual changes in the plan
+}
+
+variable "firehose_processing_enabled" {
+  description = "Kinesis firehose processing enabled"
+  type        = bool
+  default     = true
 }
