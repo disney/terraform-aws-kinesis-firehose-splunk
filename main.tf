@@ -276,6 +276,10 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
   timeout                        = var.lambda_function_timeout
   reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
 
+  environment  {
+    variables = var.lambda_function_environment_variables
+  }  
+
   dynamic "tracing_config" {
     for_each = var.lambda_tracing_config == null ? [] : [1]
     content {

@@ -143,6 +143,11 @@ variable "lambda_function_timeout" {
   default     = 180
 }
 
+variable "lambda_function_environment_variables" {
+    description = "Environment variables for the lambda function"
+    default = { }
+}
+
 variable "lambda_iam_policy_name" {
   description = "Name of the IAM policy that is attached to the IAM Role for the lambda transform function"
   type        = string
