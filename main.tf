@@ -438,7 +438,7 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter" {
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filters" {
-  for_each        = var.input_cloudwatch_logs_group_names_to_ship != null ? toset(var.input_cloudwatch_logs_group_names_to_ship) : toset([])
+  for_each        = var.cloudwatch_log_group_names_to_ship != null ? toset(var.cloudwatch_log_group_names_to_ship) : toset([])
   name            = "${var.cloudwatch_log_filter_name}_${each.value}"
   role_arn        = aws_iam_role.cloudwatch_to_firehose_trust.arn
   destination_arn = aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn

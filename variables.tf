@@ -127,7 +127,7 @@ variable "arn_cloudwatch_logs_to_ship" {
 }
 
 variable "name_cloudwatch_logs_to_ship" {
-  description = "Name of the CloudWatch Log Group that you want to ship to Splunk (single log group; leave empty to not create the subscription filter; see var.cloudwatch_logs_group_names_to_ship for creating subscription filters for multiple log groups)."
+  description = "Name of the CloudWatch Log Group that you want to ship to Splunk (single log group; leave empty to not create the subscription filter; see var.cloudwatch_log_group_names_to_ship for creating subscription filters for multiple log groups)."
   type        = string
   default     = null
 }
@@ -174,7 +174,7 @@ variable "cloudwatch_log_filter_name" {
   default     = "KinesisSubscriptionFilter"
 }
 
-variable "cloudwatch_logs_group_names_to_ship" {
+variable "cloudwatch_log_group_names_to_ship" {
   description = "List of CloudWatch Log Group names that you want to ship to Splunk."
   type        = list(string)
   default     = null
