@@ -1,5 +1,3 @@
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/disney/terraform-aws-kinesis-firehose-splunk/master.svg)](https://results.pre-commit.ci/latest/github/disney/terraform-aws-kinesis-firehose-splunk/master)
-
 # Send CloudWatch Logs to Splunk via Kinesis Firehose
 
 This module configures a Kinesis Firehose, sets up a subscription for a desired CloudWatch Log Group to the Firehose, and sends the log data to Splunk.  A Lambda function is required to transform the CloudWatch Log data from "CloudWatch compressed format" to a format compatible with Splunk.  This module takes care of configuring this Lambda function.
@@ -89,18 +87,20 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | [aws_s3_bucket_server_side_encryption_configuration.kinesis_firehose_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
 | [aws_s3_bucket_versioning.kinesis_firehose_s3_bucket_versioning](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 | [archive_file.lambda_function](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.cloudwatch_to_fh_access_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kinesis_firehose_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.lambda_policy_doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_arn_cloudwatch_logs_to_ship"></a> [arn\_cloudwatch\_logs\_to\_ship](#input\_arn\_cloudwatch\_logs\_to\_ship) | arn of the CloudWatch Log Group that you want to ship to Splunk. | `string` | n/a | yes |
 | <a name="input_hec_url"></a> [hec\_url](#input\_hec\_url) | Splunk Kinesis URL for submitting CloudWatch logs to splunk | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The region of AWS you want to work in, such as us-west-2 or us-east-1 | `string` | n/a | yes |
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | Name of the s3 bucket Kinesis Firehose uses for backups | `string` | n/a | yes |
+| <a name="input_arn_cloudwatch_logs_to_ship"></a> [arn\_cloudwatch\_logs\_to\_ship](#input\_arn\_cloudwatch\_logs\_to\_ship) | arn of the CloudWatch Log Group that you want to ship to Splunk. | `string` | `null` | no |
 | <a name="input_aws_s3_bucket_versioning"></a> [aws\_s3\_bucket\_versioning](#input\_aws\_s3\_bucket\_versioning) | Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets. | `string` | `null` | no |
 | <a name="input_cloudwach_log_group_kms_key_id"></a> [cloudwach\_log\_group\_kms\_key\_id](#input\_cloudwach\_log\_group\_kms\_key\_id) | KMS key ID of the key to use to encrypt the Cloudwatch log group | `string` | `null` | no |
 | <a name="input_cloudwatch_log_filter_name"></a> [cloudwatch\_log\_filter\_name](#input\_cloudwatch\_log\_filter\_name) | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | `string` | `"KinesisSubscriptionFilter"` | no |
