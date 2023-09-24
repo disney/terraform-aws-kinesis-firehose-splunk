@@ -1,8 +1,10 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
 ## v8.1.0
- * Making var.name\_cloudwatch\_logs\_to\_ship non-mandatory. The var will now default to `null` and the subscription filter will not be created in such case.
- * Adding var.cloudwatch\_log\_group\_names\_to\_ship to allow creating subscription filters to multiple log groups.
+ * Change `var.name_cloudwatch_logs_to_ship` to be non-mandatory. It will now default to `null` and the subscription filter will not be created if it is `null`. See `var.cloudwatch_log_group_names_to_ship` to create subscription filters to multiple log groups.
+ * Fix [#27](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/27) - Add `var.cloudwatch_log_group_names_to_ship` to allow creating subscription filters to multiple log groups.
+ * Fix [#28](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/28) - Change `var.arn_cloudwatch_logs_to_ship` to be non-mandatory. The ARN will now be derived automatically if `var.name_cloudwatch_logs_to_ship` is used (not `null`).
+ * Update README.md with variable changes, and a new description for `var.cloudwatch_logs_to_ship`.
 
 ## v8.0.0 - **Breaking Changes**
  * Requires `>= 5.0.0, < 6.0.0` of the terraform aws [provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
