@@ -223,6 +223,21 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
     }
   }
 
+  dynamic "statement" {
+    for_each = var.name_cloudwatch_logs_to_ship != null ? [var.name_cloudwatch_logs_to_ship] : []
+    content {
+      actions = [
+        "logs:GetLogEvents",
+      ]
+
+      resources = [
+        "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${statement.value}:*"
+      ]
+
+      effect = "Allow"
+    }
+  }
+
   statement {
     actions = [
       "firehose:PutRecordBatch",
