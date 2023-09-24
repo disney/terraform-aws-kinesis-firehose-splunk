@@ -337,17 +337,17 @@ POLICY
 data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
   statement {
     actions = [
-      "s3:PutObject",
-      "s3:ListBucketMultipartUploads",
-      "s3:ListBucket",
-      "s3:GetObject",
-      "s3:GetBucketLocation",
       "s3:AbortMultipartUpload",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:PutObject",
     ]
 
     resources = [
-      "${aws_s3_bucket.kinesis_firehose_s3_bucket.arn}/*",
       aws_s3_bucket.kinesis_firehose_s3_bucket.arn,
+      "${aws_s3_bucket.kinesis_firehose_s3_bucket.arn}/*",
     ]
 
     effect = "Allow"
@@ -355,8 +355,8 @@ data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
 
   statement {
     actions = [
-      "lambda:GetFunctionConfiguration",
       "lambda:InvokeFunction",
+      "lambda:GetFunctionConfiguration",
     ]
 
     resources = [
