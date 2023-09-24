@@ -208,6 +208,23 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
 
   statement {
     actions = [
+      "logs:GetLogEvents",
+    ]
+
+    #  arn_cloudwatch_logs_to_ship = "arn:aws:logs:us-west-2:914025435615:log-group:/aws/apigateway/welcome:*"
+    # resources = [
+    #   "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.name_cloudwatch_logs_to_ship}",
+    # ]
+
+    resources = [
+      data.aws_cloudwatch_log_group.cloudwatch_log_group_to_ship.arn
+    ]
+
+    effect = "Allow"
+  }
+
+  statement {
+    actions = [
       "firehose:PutRecordBatch",
     ]
 
