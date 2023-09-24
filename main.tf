@@ -193,34 +193,34 @@ POLICY
 }
 
 data "aws_iam_policy_document" "lambda_policy_doc" {
-  #checkov:skip=CKV_AWS_356:Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions
-  statement {
-    actions = [
-      "logs:GetLogEvents",
-    ]
+  dynamic "statement" {
+    for_each = var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : []
+    content {
+      actions = [
+        "logs:GetLogEvents",
+      ]
 
-    resources = [
-      var.arn_cloudwatch_logs_to_ship,
-    ]
+      resources = [
+        var.arn_cloudwatch_logs_to_ship,
+      ]
 
-    effect = "Allow"
+      effect = "Allow"
+    }
   }
 
-  statement {
-    actions = [
-      "logs:GetLogEvents",
-    ]
+  dynamic "statement" {
+    for_each = toset(var.cloudwatch_log_group_names_to_ship) != null ? toset(var.cloudwatch_log_group_names_to_ship) : []
+    content {
+      actions = [
+        "logs:GetLogEvents",
+      ]
 
-    #  arn_cloudwatch_logs_to_ship = "arn:aws:logs:us-west-2:914025435615:log-group:/aws/apigateway/welcome:*"
-    # resources = [
-    #   "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.name_cloudwatch_logs_to_ship}",
-    # ]
+      resources = [
+        "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${statement.value}:*"
+      ]
 
-    resources = [
-      data.aws_cloudwatch_log_group.cloudwatch_log_group_to_ship.arn
-    ]
-
-    effect = "Allow"
+      effect = "Allow"
+    }
   }
 
   statement {
@@ -337,17 +337,17 @@ POLICY
 data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
   statement {
     actions = [
-      "s3:AbortMultipartUpload",
-      "s3:GetBucketLocation",
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:ListBucketMultipartUploads",
       "s3:PutObject",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:GetBucketLocation",
+      "s3:AbortMultipartUpload",
     ]
 
     resources = [
-      aws_s3_bucket.kinesis_firehose_s3_bucket.arn,
       "${aws_s3_bucket.kinesis_firehose_s3_bucket.arn}/*",
+      aws_s3_bucket.kinesis_firehose_s3_bucket.arn,
     ]
 
     effect = "Allow"
@@ -355,8 +355,8 @@ data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
 
   statement {
     actions = [
-      "lambda:InvokeFunction",
       "lambda:GetFunctionConfiguration",
+      "lambda:InvokeFunction",
     ]
 
     resources = [
