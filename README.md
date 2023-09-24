@@ -13,12 +13,12 @@ Once you have received the token, you can proceed forward in creating a `module`
 ##### Example
 ```hcl
 module "kinesis_firehose" {
-  source                       = "disney/kinesis-firehose-splunk/aws"
-  region                       = "us-east-1"
-  arn_cloudwatch_logs_to_ship  = "arn:aws:logs:us-east-1:<aws_account_number>:log-group:/test/test01:*"
-  name_cloudwatch_logs_to_ship = "/test/test01"
-  hec_url                      = "<Splunk_Kinesis_ingest_URL>"
-  s3_bucket_name               = "<mybucketname>"
+  source                             = "disney/kinesis-firehose-splunk/aws"
+  region                             = "us-east-1"
+  name_cloudwatch_logs_to_ship       = "/test/test01"
+  cloudwatch_log_group_names_to_ship = ["/aws/svc/loggroup1", "log-group-2", "/aws/svc2/loggroup"]
+  hec_url                            = "<Splunk_Kinesis_ingest_URL>"
+  s3_bucket_name                     = "<mybucketname>"
 
   ### HEC Token ###
   One of var.hec_token (default) OR var.self_managed_hec_token must be used to pass in the Splunk HEC token.
