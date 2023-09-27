@@ -403,24 +403,22 @@ resource "aws_iam_role_policy_attachment" "kinesis_fh_role_attachment" {
   policy_arn = aws_iam_policy.kinesis_firehose_iam_policy.arn
 }
 
+data "aws_iam_policy_document" "cloudwatch_to_firehose_trust_assume_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = [for region in var.cloudwatch_log_regions : "logs.${region}.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "cloudwatch_to_firehose_trust" {
   name        = var.cloudwatch_to_firehose_trust_iam_role_name
-  description = "Role for CloudWatch Log Group subscription"
-
-  assume_role_policy = <<ROLE
-{
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "logs.${var.region}.amazonaws.com"
-      }
-    }
-  ],
-  "Version": "2012-10-17"
-}
-ROLE
+  description = "Role for CloudWatch Log Group subscriptions"
+  
+  assume_role_policy = "${data.aws_iam_policy_document.cloudwatch_to_firehose_trust_assume_policy.json}"
 }
 
 data "aws_iam_policy_document" "cloudwatch_to_fh_access_policy" {
