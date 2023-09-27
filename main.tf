@@ -1,6 +1,7 @@
 locals {
   lambda_function_source_file = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
   lambda_function_handler     = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
+  cloudwatch_log_regions = var.region == null ? var.cloudwatch_log_regions : [var.region]
 }
 
 # Kenisis firehose stream
@@ -409,7 +410,7 @@ data "aws_iam_policy_document" "cloudwatch_to_firehose_trust_assume_policy" {
     effect = "Allow"
     principals {
       type        = "Service"
-      identifiers = [for region in var.cloudwatch_log_regions : "logs.${region}.amazonaws.com"]
+      identifiers = [for region in local.cloudwatch_log_regions : "logs.${region}.amazonaws.com"]
     }
   }
 }
