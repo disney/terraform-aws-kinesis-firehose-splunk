@@ -98,7 +98,8 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_hec_url"></a> [hec\_url](#input\_hec\_url) | Splunk Kinesis URL for submitting CloudWatch logs to splunk | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | The region of AWS you want to work in, such as us-west-2 or us-east-1 | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | The region of AWS you want to work in, such as us-west-2 or us-east-1 | `string` | n/a | no |
+| <a name="input_cloudwatch_log_regions"></a> [region](#input\_cloudwatch_log_regions) | List of regions to allow CloudWatch logs to be shipped from. Set in Kinesis Firehose role's trust polucy | `list(string)` | n/a | no |
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | Name of the s3 bucket Kinesis Firehose uses for backups | `string` | n/a | yes |
 | <a name="input_arn_cloudwatch_logs_to_ship"></a> [arn\_cloudwatch\_logs\_to\_ship](#input\_arn\_cloudwatch\_logs\_to\_ship) | arn of the CloudWatch Log Group that you want to ship to Splunk. | `string` | `null` | no |
 | <a name="input_aws_s3_bucket_versioning"></a> [aws\_s3\_bucket\_versioning](#input\_aws\_s3\_bucket\_versioning) | Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets. | `string` | `null` | no |
