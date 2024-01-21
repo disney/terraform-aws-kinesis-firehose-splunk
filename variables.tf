@@ -278,6 +278,12 @@ variable "s3_bucket_key_enabled" {
   default     = null
 }
 
+variable "lambda_kms_key_arn" {
+  description = "Amazon Resource Name (ARN) of the AWS Key Management Service (KMS) key that is used to encrypt environment variables."
+  type        = string
+  default     = null
+}
+
 ############# 3rd Party Software ############
 variable "lifecycle_rule" {
   description = "List of maps containing configuration of object lifecycle management."

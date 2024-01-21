@@ -107,6 +107,7 @@ resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
+  #checkov:skip=CKV2_AWS_65: Ensure access control lists for S3 buckets are disabled
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
 
   rule {
@@ -308,6 +309,7 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
   runtime                        = var.nodejs_runtime
   timeout                        = var.lambda_function_timeout
   reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
+  kms_key_arn                    = var.lambda_function_environment_variables != {} ? var.lambda_kms_key_arn : null
 
   environment {
     variables = var.lambda_function_environment_variables
