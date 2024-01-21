@@ -15,7 +15,6 @@ Once you have received the token, you can proceed forward in creating a `module`
 module "kinesis_firehose" {
   source                             = "disney/kinesis-firehose-splunk/aws"
   version                            = "<version>"
-  region                             = "us-east-1"
   cloudwatch_log_regions             = ["us-east-1", "us-west-2"]
   name_cloudwatch_logs_to_ship       = "/test/test01"
   cloudwatch_log_group_names_to_ship = ["/aws/svc/loggroup1", "log-group-2", "/aws/svc2/loggroup"]
