@@ -1,6 +1,13 @@
 variable "region" {
-  description = "The region of AWS you want to work in, such as us-west-2 or us-east-1"
+  description = "The region of AWS you want to work in, such as us-west-2 or us-east-1 (deprecated: use cloudwatch_log_regions instead)"
   type        = string
+  default = null
+}
+
+variable "cloudwatch_log_regions" {
+  description = "List of regions to allow CloudWatch logs to be shipped from. Set in Kinesis Firehose role's trust polucy"
+  type        = list(string)
+  default = [ ]
 }
 
 variable "hec_url" {
