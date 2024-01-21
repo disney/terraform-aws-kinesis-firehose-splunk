@@ -1,13 +1,13 @@
 variable "region" {
-  description = "The region of AWS you want to work in, such as us-west-2 or us-east-1 (deprecated: use cloudwatch_log_regions instead)"
+  description = "DEPRECATED. The region of AWS you want to work in, such as us-west-2 or us-east-1 (deprecated: use `var.cloudwatch_log_regions` instead)"
   type        = string
-  default = null
+  default     = null
 }
 
 variable "cloudwatch_log_regions" {
   description = "List of regions to allow CloudWatch logs to be shipped from. Set in Kinesis Firehose role's trust polucy"
   type        = list(string)
-  default = [ ]
+  default     = []
 }
 
 variable "hec_url" {
@@ -153,8 +153,9 @@ variable "lambda_function_timeout" {
 }
 
 variable "lambda_function_environment_variables" {
-    description = "Environment variables for the lambda function"
-    default = { }
+  description = "Environment variables for the lambda function"
+  default     = {}
+  type        = map(string)
 }
 
 variable "lambda_iam_policy_name" {
