@@ -14,7 +14,8 @@ Once you have received the token, you can proceed forward in creating a `module`
 ```hcl
 module "kinesis_firehose" {
   source                             = "disney/kinesis-firehose-splunk/aws"
-  region                             = "us-east-1"
+  version                            = "<version>"
+  cloudwatch_log_regions             = ["us-east-1", "us-west-2"]
   name_cloudwatch_logs_to_ship       = "/test/test01"
   cloudwatch_log_group_names_to_ship = ["/aws/svc/loggroup1", "log-group-2", "/aws/svc2/loggroup"]
   hec_url                            = "<Splunk_Kinesis_ingest_URL>"
@@ -26,6 +27,11 @@ module "kinesis_firehose" {
 
 ```
 Please see the [S3 Life Cycle Rule example](examples/s3_bucket_lifecycle_rule.md) if you wish to configure them.
+
+## Splunk Cloud Customers
+If you are a Splunk Cloud customer, once you have successfully deployed all the resources, you will need to ensure that your Splunk Cloud instance has the Kinesis Data Firehose egress CIDRs allow listed under `Server Settings > IP Allow List Management > HEC access for ingestion`.
+
+For more details on the relevant CIDRs please reference this [article](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#using-iam-splunk-vpc).
 
 ### Upgrading from v6.0.0 to v7.0.0
 
@@ -89,6 +95,7 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | [archive_file.lambda_function](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.cloudwatch_to_fh_access_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.cloudwatch_to_firehose_trust_assume_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kinesis_firehose_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.lambda_policy_doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
@@ -98,14 +105,13 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_hec_url"></a> [hec\_url](#input\_hec\_url) | Splunk Kinesis URL for submitting CloudWatch logs to splunk | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | The region of AWS you want to work in, such as us-west-2 or us-east-1 | `string` | n/a | no |
-| <a name="input_cloudwatch_log_regions"></a> [region](#input\_cloudwatch_log_regions) | List of regions to allow CloudWatch logs to be shipped from. Set in Kinesis Firehose role's trust polucy | `list(string)` | n/a | no |
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | Name of the s3 bucket Kinesis Firehose uses for backups | `string` | n/a | yes |
 | <a name="input_arn_cloudwatch_logs_to_ship"></a> [arn\_cloudwatch\_logs\_to\_ship](#input\_arn\_cloudwatch\_logs\_to\_ship) | arn of the CloudWatch Log Group that you want to ship to Splunk. | `string` | `null` | no |
 | <a name="input_aws_s3_bucket_versioning"></a> [aws\_s3\_bucket\_versioning](#input\_aws\_s3\_bucket\_versioning) | Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets. | `string` | `null` | no |
 | <a name="input_cloudwach_log_group_kms_key_id"></a> [cloudwach\_log\_group\_kms\_key\_id](#input\_cloudwach\_log\_group\_kms\_key\_id) | KMS key ID of the key to use to encrypt the Cloudwatch log group | `string` | `null` | no |
 | <a name="input_cloudwatch_log_filter_name"></a> [cloudwatch\_log\_filter\_name](#input\_cloudwatch\_log\_filter\_name) | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | `string` | `"KinesisSubscriptionFilter"` | no |
 | <a name="input_cloudwatch_log_group_names_to_ship"></a> [cloudwatch\_log\_group\_names\_to\_ship](#input\_cloudwatch\_log\_group\_names\_to\_ship) | List of CloudWatch Log Group names that you want to ship to Splunk. | `list(string)` | `null` | no |
+| <a name="input_cloudwatch_log_regions"></a> [cloudwatch\_log\_regions](#input\_cloudwatch\_log\_regions) | List of regions to allow CloudWatch logs to be shipped from. Set in Kinesis Firehose role's trust polucy | `list(string)` | `[]` | no |
 | <a name="input_cloudwatch_log_retention"></a> [cloudwatch\_log\_retention](#input\_cloudwatch\_log\_retention) | Length in days to keep CloudWatch logs of Kinesis Firehose | `number` | `30` | no |
 | <a name="input_cloudwatch_to_fh_access_policy_name"></a> [cloudwatch\_to\_fh\_access\_policy\_name](#input\_cloudwatch\_to\_fh\_access\_policy\_name) | Name of IAM policy attached to the IAM role for CloudWatch to Kinesis Firehose subscription | `string` | `"KinesisCloudWatchToFirehosePolicy"` | no |
 | <a name="input_cloudwatch_to_firehose_trust_iam_role_name"></a> [cloudwatch\_to\_firehose\_trust\_iam\_role\_name](#input\_cloudwatch\_to\_firehose\_trust\_iam\_role\_name) | IAM Role name for CloudWatch to Kinesis Firehose subscription | `string` | `"CloudWatchToSplunkFirehoseTrust"` | no |
@@ -125,9 +131,11 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | <a name="input_kinesis_firehose_iam_policy_name"></a> [kinesis\_firehose\_iam\_policy\_name](#input\_kinesis\_firehose\_iam\_policy\_name) | Name of the IAM Policy attached to IAM Role for the Kinesis Firehose | `string` | `"KinesisFirehose-Policy"` | no |
 | <a name="input_kinesis_firehose_lambda_role_name"></a> [kinesis\_firehose\_lambda\_role\_name](#input\_kinesis\_firehose\_lambda\_role\_name) | Name of IAM Role for Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format | `string` | `"KinesisFirehoseToLambaRole"` | no |
 | <a name="input_kinesis_firehose_role_name"></a> [kinesis\_firehose\_role\_name](#input\_kinesis\_firehose\_role\_name) | Name of IAM Role for the Kinesis Firehose | `string` | `"KinesisFirehoseRole"` | no |
+| <a name="input_lambda_function_environment_variables"></a> [lambda\_function\_environment\_variables](#input\_lambda\_function\_environment\_variables) | Environment variables for the lambda function | `map(string)` | `{}` | no |
 | <a name="input_lambda_function_name"></a> [lambda\_function\_name](#input\_lambda\_function\_name) | Name of the Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format | `string` | `"kinesis-firehose-transform"` | no |
 | <a name="input_lambda_function_timeout"></a> [lambda\_function\_timeout](#input\_lambda\_function\_timeout) | The function execution time at which Lambda should terminate the function. | `number` | `180` | no |
 | <a name="input_lambda_iam_policy_name"></a> [lambda\_iam\_policy\_name](#input\_lambda\_iam\_policy\_name) | Name of the IAM policy that is attached to the IAM Role for the lambda transform function | `string` | `"Kinesis-Firehose-to-Splunk-Policy"` | no |
+| <a name="input_lambda_kms_key_arn"></a> [lambda\_kms\_key\_arn](#input\_lambda\_kms\_key\_arn) | Amazon Resource Name (ARN) of the AWS Key Management Service (KMS) key that is used to encrypt environment variables. | `string` | `null` | no |
 | <a name="input_lambda_processing_buffer_interval_in_seconds"></a> [lambda\_processing\_buffer\_interval\_in\_seconds](#input\_lambda\_processing\_buffer\_interval\_in\_seconds) | Lambda processing buffer interval in seconds. | `number` | `61` | no |
 | <a name="input_lambda_processing_buffer_size_in_mb"></a> [lambda\_processing\_buffer\_size\_in\_mb](#input\_lambda\_processing\_buffer\_size\_in\_mb) | Lambda processing buffer size in mb. | `number` | `0.256` | no |
 | <a name="input_lambda_reserved_concurrent_executions"></a> [lambda\_reserved\_concurrent\_executions](#input\_lambda\_reserved\_concurrent\_executions) | Amount of reserved concurrent executions for this lambda function. A value of `0` disables lambda from being triggered and `-1` removes any concurrency limitations. | `string` | `null` | no |
@@ -142,6 +150,7 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | <a name="input_object_lock_configuration_mode"></a> [object\_lock\_configuration\_mode](#input\_object\_lock\_configuration\_mode) | Default Object Lock retention mode you want to apply to new objects placed in the specified bucket. Valid values: COMPLIANCE, GOVERNANCE | `string` | `null` | no |
 | <a name="input_object_lock_configuration_token"></a> [object\_lock\_configuration\_token](#input\_object\_lock\_configuration\_token) | S3 bucket object lock configuration token | `string` | `null` | no |
 | <a name="input_object_lock_configuration_years"></a> [object\_lock\_configuration\_years](#input\_object\_lock\_configuration\_years) | Required if days is not specified. Number of years that you want to specify for the default retention period | `number` | `null` | no |
+| <a name="input_region"></a> [region](#input\_region) | DEPRECATED. The region of AWS you want to work in, such as us-west-2 or us-east-1 (deprecated: use `var.cloudwatch_log_regions` instead) | `string` | `null` | no |
 | <a name="input_s3_backup_mode"></a> [s3\_backup\_mode](#input\_s3\_backup\_mode) | Defines how documents should be delivered to Amazon S3. Valid values are FailedEventsOnly and AllEvents. | `string` | `"FailedEventsOnly"` | no |
 | <a name="input_s3_bucket_block_public_access_enabled"></a> [s3\_bucket\_block\_public\_access\_enabled](#input\_s3\_bucket\_block\_public\_access\_enabled) | Set to 1 if you would like to add block public access settings for the s3 bucket Kinesis Firehose uses for backups | `number` | `0` | no |
 | <a name="input_s3_bucket_key_enabled"></a> [s3\_bucket\_key\_enabled](#input\_s3\_bucket\_key\_enabled) | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `null` | no |

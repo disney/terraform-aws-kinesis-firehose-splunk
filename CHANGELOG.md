@@ -1,5 +1,10 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v8.2.0
+ * Fix [#34](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/34) - Add documentation note in README.md for Splunk Cloud customers. Thanks[@out-of-mana](https://github.com/out-of-mana)
+ * Fix [#32](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/32) - Enable Cloudwatch Logs Access From Multiple Regions. `var.region` is now Deprecated. Thanks [@bogdannazarenko](https://github.com/bogdannazarenko)
+ * Expose Lambda environment variables. Thanks [@tlopo](https://github.com/tlopo).
+
 ## v8.1.0
  * Change `var.name_cloudwatch_logs_to_ship` to be non-mandatory. It will now default to `null` and the subscription filter will not be created if it is `null`. See `var.cloudwatch_log_group_names_to_ship` to create subscription filters to multiple log groups.
  * Fix [#27](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/27) - Add `var.cloudwatch_log_group_names_to_ship` to allow creating subscription filters to multiple log groups.

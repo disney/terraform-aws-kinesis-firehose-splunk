@@ -1,7 +1,7 @@
 locals {
   lambda_function_source_file = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
   lambda_function_handler     = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
-  cloudwatch_log_regions = var.region == null ? var.cloudwatch_log_regions : [var.region]
+  cloudwatch_log_regions      = var.region == null ? var.cloudwatch_log_regions : [var.region]
 }
 
 # Kenisis firehose stream
@@ -107,6 +107,7 @@ resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
+  #checkov:skip=CKV2_AWS_65: Ensure access control lists for S3 buckets are disabled
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
 
   rule {
@@ -308,10 +309,11 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
   runtime                        = var.nodejs_runtime
   timeout                        = var.lambda_function_timeout
   reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
+  kms_key_arn                    = var.lambda_function_environment_variables != {} ? var.lambda_kms_key_arn : null
 
-  environment  {
+  environment {
     variables = var.lambda_function_environment_variables
-  }  
+  }
 
   dynamic "tracing_config" {
     for_each = var.lambda_tracing_config == null ? [] : [1]
@@ -411,7 +413,7 @@ resource "aws_iam_role_policy_attachment" "kinesis_fh_role_attachment" {
 data "aws_iam_policy_document" "cloudwatch_to_firehose_trust_assume_policy" {
   statement {
     actions = ["sts:AssumeRole"]
-    effect = "Allow"
+    effect  = "Allow"
     principals {
       type        = "Service"
       identifiers = [for region in local.cloudwatch_log_regions : "logs.${region}.amazonaws.com"]
@@ -422,8 +424,8 @@ data "aws_iam_policy_document" "cloudwatch_to_firehose_trust_assume_policy" {
 resource "aws_iam_role" "cloudwatch_to_firehose_trust" {
   name        = var.cloudwatch_to_firehose_trust_iam_role_name
   description = "Role for CloudWatch Log Group subscriptions"
-  
-  assume_role_policy = "${data.aws_iam_policy_document.cloudwatch_to_firehose_trust_assume_policy.json}"
+
+  assume_role_policy = data.aws_iam_policy_document.cloudwatch_to_firehose_trust_assume_policy.json
 }
 
 data "aws_iam_policy_document" "cloudwatch_to_fh_access_policy" {
