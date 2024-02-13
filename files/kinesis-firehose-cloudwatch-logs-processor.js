@@ -128,7 +128,7 @@ async function putRecordsBase (
       [streamNameArgName]: streamName,
       Records: records
     }
-    const response = await client[methodName](args).promise()
+    const response = await client[methodName](args)
     const errCodes = []
     for (let i = 0; i < response[failureDetailsKey].length; i++) {
       const errCode = response[failureDetailsKey][i].ErrorCode
