@@ -1,5 +1,10 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v9.0.0 - **Breaking Changes**
+ * Fix [#36](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/36) - AWS SDK v3.x is what is packaged with `nodejs18.x` runtime. Updating Lambda code for NodeJS AWS SDK v3.x.
+ * The Lambda code update is a breaking change because some users may still be on `nodejs16.x` runtime which uses NodeJS AWS SDK v2.x, per this [documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html).
+ * Bumping default runtime to `nodejs20.x` since this runtime version uses the same AWS SDK v3.x version as `nodejs18.x`.
+
 ## v8.2.0
  * Fix [#34](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/34) - Add documentation note in README.md for Splunk Cloud customers. Thanks[@out-of-mana](https://github.com/out-of-mana)
  * Fix [#32](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/32) - Enable Cloudwatch Logs Access From Multiple Regions. `var.region` is now Deprecated. Thanks [@bogdannazarenko](https://github.com/bogdannazarenko)
