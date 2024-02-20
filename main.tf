@@ -1,7 +1,7 @@
 locals {
-  lambda_function_source_file = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.js"
-  lambda_function_handler     = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
-  cloudwatch_log_regions      = var.region == null ? var.cloudwatch_log_regions : [var.region]
+  lambda_function_source  = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files"
+  lambda_function_handler = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
+  cloudwatch_log_regions  = var.region == null ? var.cloudwatch_log_regions : [var.region]
 }
 
 # Kenisis firehose stream
@@ -329,7 +329,8 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
 # code supplied to AWS by Splunk.
 data "archive_file" "lambda_function" {
   type        = "zip"
-  source_file = local.lambda_function_source_file
+  source_dir  = local.lambda_function_source
+  excludes    = ["kinesis-firehose-cloudwatch-logs-processor.zip"]
   output_path = "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.zip"
 }
 
