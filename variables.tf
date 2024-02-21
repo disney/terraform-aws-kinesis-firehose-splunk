@@ -242,7 +242,7 @@ variable "firehose_server_side_encryption_key_arn" {
   default     = null
 }
 
-variable "cloudwach_log_group_kms_key_id" {
+variable "cloudwatch_log_group_kms_key_id" {
   description = "KMS key ID of the key to use to encrypt the Cloudwatch log group"
   type        = string
   default     = null
