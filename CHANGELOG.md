@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v9.0.2
+ * Use data resource `aws_partition` to discern current partition for IAM policy so that it can work in AWS China or AWS Gov.
+
 ## v9.0.1
  * Fix [#39](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/issues/39) - Syntax error: Cannot use import statement outside a module. Added `package.json` file.
  * Added `.vscode` to `.gitignore` file.
