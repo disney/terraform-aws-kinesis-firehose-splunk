@@ -4,7 +4,7 @@ locals {
   cloudwatch_log_regions  = var.region == null ? var.cloudwatch_log_regions : [var.region]
 }
 
-# Kenisis firehose stream
+# Kinesis firehose stream
 # Record Transformation Required, called "processing_configuration" in Terraform
 resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
   name        = var.firehose_name
@@ -160,7 +160,7 @@ resource "aws_cloudwatch_log_group" "kinesis_logs" {
   #checkov:skip=CKV_AWS_338: Ensure CloudWatch log groups retains logs for at least 1 year
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
   retention_in_days = var.cloudwatch_log_retention
-  kms_key_id        = var.cloudwach_log_group_kms_key_id
+  kms_key_id        = var.cloudwatch_log_group_kms_key_id
 
   tags = var.tags
 }
