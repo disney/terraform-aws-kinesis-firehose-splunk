@@ -33,6 +33,12 @@ variable "firehose_name" {
   type        = string
 }
 
+variable "kinesis_firehose_retry_duration" {
+  description = "After an initial failure to deliver to Splunk, the total amount of time, in seconds between 0 to 7200, during which Firehose re-attempts delivery (including the first attempt). After this time has elapsed, the failed documents are written to Amazon S3. The default value is 300s. There will be no retry if the value is 0"
+  type        = number
+  default     = 300 # Seconds
+}
+
 variable "kinesis_firehose_buffer" {
   description = "https://www.terraform.io/docs/providers/aws/r/kinesis_firehose_delivery_stream.html#buffer_size"
   type        = number
@@ -144,6 +150,12 @@ variable "lambda_function_name" {
   description = "Name of the Lambda function that transforms CloudWatch data for Kinesis Firehose into Splunk compatible format"
   type        = string
   default     = "kinesis-firehose-transform"
+}
+
+variable "lambda_function_memory_size" {
+  description = "Amount of memory in MB which Lambda Function can use at runtime. Defaults to 128"
+  type        = number
+  default     = 128
 }
 
 variable "lambda_function_timeout" {

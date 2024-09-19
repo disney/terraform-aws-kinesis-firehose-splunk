@@ -25,6 +25,7 @@ resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
     hec_acknowledgment_timeout = var.hec_acknowledgment_timeout
     hec_endpoint_type          = var.hec_endpoint_type
     s3_backup_mode             = var.s3_backup_mode
+    retry_duration             = var.kinesis_firehose_retry_duration
 
     s3_configuration {
       role_arn           = aws_iam_role.kinesis_firehose.arn
@@ -307,6 +308,7 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
   handler                        = local.lambda_function_handler
   source_code_hash               = data.archive_file.lambda_function.output_base64sha256
   runtime                        = var.nodejs_runtime
+  memory_size                    = var.lambda_function_memory_size
   timeout                        = var.lambda_function_timeout
   reserved_concurrent_executions = var.lambda_reserved_concurrent_executions
   kms_key_arn                    = var.lambda_function_environment_variables != {} ? var.lambda_kms_key_arn : null
