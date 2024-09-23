@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v9.0.3
+ * Added `var.kinesis_firehose_retry_duration` and `var.lambda_function_memory_size` with appropriate defaults. Thanks [@ranga543](https://github.com/ranga543).
+
 ## v9.0.2
  * Use data resource `aws_partition` to discern current partition for IAM policy so that it can work in AWS China or AWS Gov.
 
