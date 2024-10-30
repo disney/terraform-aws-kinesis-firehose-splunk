@@ -327,6 +327,15 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
   tags = var.tags
 }
 
+# Cloudwatch logging group for Transform Lambda
+
+resource "aws_cloudwatch_log_group" "firehose_lambda_transform" {
+  name              = "/aws/lambda/${var.lambda_function_name}"
+  retention_in_days = var.cloudwatch_log_retention
+  kms_key_id        = var.cloudwach_log_group_kms_key_id
+  tags              = var.tags
+}
+
 # kinesis-firehose-cloudwatch-logs-processor.js was taken by copy/paste from the AWS UI.  It is predefined blueprint
 # code supplied to AWS by Splunk.
 data "archive_file" "lambda_function" {
