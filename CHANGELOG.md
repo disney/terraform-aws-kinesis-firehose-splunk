@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v9.0.4
+ * Added resource `"aws_cloudwatch_log_group" "firehose_lambda_transform"` for transform Lamdba logs
+
 ## v9.0.3
  * Added `var.kinesis_firehose_retry_duration` and `var.lambda_function_memory_size` with appropriate defaults. Thanks [@ranga543](https://github.com/ranga543).
 
