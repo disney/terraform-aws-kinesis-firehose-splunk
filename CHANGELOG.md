@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v9.0.5
+ * [PR #48](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/48) - Consolidate code for IAM Policy
+
 ## v9.0.4
  * Added resource `"aws_cloudwatch_log_group" "firehose_lambda_transform"` for transform Lamdba logs
 

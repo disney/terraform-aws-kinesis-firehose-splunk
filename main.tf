@@ -213,9 +213,9 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
 
   # Firehose delivery stream permissions
   statement {
-    actions = ["firehose:PutRecordBatch"]
+    actions   = ["firehose:PutRecordBatch"]
     resources = [aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn]
-    effect = "Allow"
+    effect    = "Allow"
   }
 
   # CloudWatch permissions for logging
