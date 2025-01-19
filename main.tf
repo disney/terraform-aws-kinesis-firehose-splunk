@@ -196,97 +196,42 @@ POLICY
 }
 
 data "aws_iam_policy_document" "lambda_policy_doc" {
-  dynamic "statement" {
-    for_each = var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : []
-    content {
-      actions = [
-        "logs:GetLogEvents",
-      ]
-
-      resources = [
-        var.arn_cloudwatch_logs_to_ship,
-      ]
-
-      effect = "Allow"
-    }
-  }
-
-  dynamic "statement" {
-    for_each = toset(var.cloudwatch_log_group_names_to_ship) != null ? toset(var.cloudwatch_log_group_names_to_ship) : []
-    content {
-      actions = [
-        "logs:GetLogEvents",
-      ]
-
-      resources = [
-        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${statement.value}:*"
-      ]
-
-      effect = "Allow"
-    }
-  }
-
-  dynamic "statement" {
-    for_each = var.name_cloudwatch_logs_to_ship != null ? [var.name_cloudwatch_logs_to_ship] : []
-    content {
-      actions = [
-        "logs:GetLogEvents",
-      ]
-
-      resources = [
-        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${statement.value}:*"
-      ]
-
-      effect = "Allow"
-    }
-  }
-
+  # Combine all log access statements into a single statement to reduce size
   statement {
-    actions = [
-      "firehose:PutRecordBatch",
-    ]
-
-    resources = [
-      aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn,
-    ]
+    actions = ["logs:GetLogEvents"]
+    resources = concat(
+      var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
+      toset(var.cloudwatch_log_group_names_to_ship) != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
+        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
+      ]) : [],
+      var.name_cloudwatch_logs_to_ship != null ? tolist([for log in var.name_cloudwatch_logs_to_ship :
+        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
+      ]) : []
+    )
+    effect = "Allow"
   }
 
+  # Firehose delivery stream permissions
+  statement {
+    actions = ["firehose:PutRecordBatch"]
+    resources = [aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn]
+    effect = "Allow"
+  }
+
+  # CloudWatch permissions for logging
   statement {
     actions = [
       "logs:PutLogEvents",
-    ]
-
-    resources = [
-      "*",
-    ]
-
-    effect = "Allow"
-  }
-
-  statement {
-    actions = [
       "logs:CreateLogGroup",
+      "logs:CreateLogStream"
     ]
-
     resources = [
-      "*",
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
     ]
-
-    effect = "Allow"
-  }
-
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-    ]
-
-    resources = [
-      "*",
-    ]
-
     effect = "Allow"
   }
 }
+
 
 resource "aws_iam_policy" "lambda_transform_policy" {
   name   = var.lambda_iam_policy_name
