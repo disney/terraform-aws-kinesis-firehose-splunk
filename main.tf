@@ -210,7 +210,7 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
 
       # Handle `var.name_cloudwatch_logs_to_ship` (string, list, or null)
       var.name_cloudwatch_logs_to_ship != null ? (
-        can(regex("^.*$", var.name_cloudwatch_logs_to_ship)) ?
+        type(var.name_cloudwatch_logs_to_ship) == string ?
         tolist(["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.name_cloudwatch_logs_to_ship}:*"]) :
         tolist([for log in var.name_cloudwatch_logs_to_ship :
           "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
@@ -240,24 +240,6 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
     effect = "Allow"
   }
 }
-
-
-  # CloudWatch permissions for logging
-  statement {
-    actions = [
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream"
-    ]
-    resources = [
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
-    ]
-    effect = "Allow"
-  }
-}
-
-
-
 
 resource "aws_iam_policy" "lambda_transform_policy" {
   name   = var.lambda_iam_policy_name
