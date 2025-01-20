@@ -242,6 +242,21 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
 }
 
 
+  # CloudWatch permissions for logging
+  statement {
+    actions = [
+      "logs:PutLogEvents",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream"
+    ]
+    resources = [
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+    ]
+    effect = "Allow"
+  }
+}
+
+
 
 
 resource "aws_iam_policy" "lambda_transform_policy" {
