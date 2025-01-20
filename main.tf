@@ -210,7 +210,7 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
 
       # Handle `var.name_cloudwatch_logs_to_ship` (string, list, or null)
       var.name_cloudwatch_logs_to_ship != null ? (
-        type(var.name_cloudwatch_logs_to_ship) == string ?
+        can(regex("^.*$", var.name_cloudwatch_logs_to_ship)) ?
         tolist(["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.name_cloudwatch_logs_to_ship}:*"]) :
         tolist([for log in var.name_cloudwatch_logs_to_ship :
           "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
