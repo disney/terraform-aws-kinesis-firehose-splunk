@@ -200,13 +200,22 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
   statement {
     actions = ["logs:GetLogEvents"]
     resources = concat(
+      # Handle `var.arn_cloudwatch_logs_to_ship` (single string or null)
       var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
-      toset(var.cloudwatch_log_group_names_to_ship) != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
+
+      # Handle `var.cloudwatch_log_group_names_to_ship` (list or null)
+      var.cloudwatch_log_group_names_to_ship != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
       ]) : [],
-      var.name_cloudwatch_logs_to_ship != null ? tolist([for log in var.name_cloudwatch_logs_to_ship :
-        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : []
+
+      # Handle `var.name_cloudwatch_logs_to_ship` (string, list, or null)
+      var.name_cloudwatch_logs_to_ship != null ? (
+        can(regex("^.*$", var.name_cloudwatch_logs_to_ship)) ?
+        tolist(["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.name_cloudwatch_logs_to_ship}:*"]) :
+        tolist([for log in var.name_cloudwatch_logs_to_ship :
+          "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
+        ])
+      ) : []
     )
     effect = "Allow"
   }
@@ -231,7 +240,6 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
     effect = "Allow"
   }
 }
-
 
 resource "aws_iam_policy" "lambda_transform_policy" {
   name   = var.lambda_iam_policy_name
