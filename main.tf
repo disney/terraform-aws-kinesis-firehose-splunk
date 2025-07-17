@@ -199,9 +199,11 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
   # Combine all log access statements into a single statement to reduce size
   statement {
     actions = ["logs:GetLogEvents"]
+
     resources = [
       "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:*"
     ]
+
 
     effect = "Allow"
   }
@@ -226,7 +228,6 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
     effect = "Allow"
   }
 }
-
 
 resource "aws_iam_policy" "lambda_transform_policy" {
   name   = var.lambda_iam_policy_name
