@@ -199,15 +199,10 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
   # Combine all log access statements into a single statement to reduce size
   statement {
     actions = ["logs:GetLogEvents"]
-    resources = concat(
-      var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
-      toset(var.cloudwatch_log_group_names_to_ship) != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
-        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : [],
-      var.name_cloudwatch_logs_to_ship != null ? tolist([for log in var.name_cloudwatch_logs_to_ship :
-        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : []
-    )
+    resources = [
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:*"
+    ]
+
     effect = "Allow"
   }
 
