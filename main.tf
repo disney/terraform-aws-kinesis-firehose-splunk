@@ -195,35 +195,45 @@ POLICY
   tags = var.tags
 }
 
+
 data "aws_iam_policy_document" "lambda_policy_doc" {
-  # Combine all log access statements into a single statement to reduce size
+  # CloudWatch Logs read access
   statement {
+    sid     = "CloudWatchLogsReadAccess"
     actions = ["logs:GetLogEvents"]
-    resources = concat(
+
+    resources = distinct(compact(concat(
       var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
-      toset(var.cloudwatch_log_group_names_to_ship) != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
+
+      var.cloudwatch_log_group_names_to_ship != null ? [
+        for log in var.cloudwatch_log_group_names_to_ship :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : [],
-      var.name_cloudwatch_logs_to_ship != null ? tolist([for log in var.name_cloudwatch_logs_to_ship :
+      ] : [],
+
+      var.name_cloudwatch_logs_to_ship != null ? [
+        for log in var.name_cloudwatch_logs_to_ship :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : []
-    )
+      ] : []
+    )))
+
     effect = "Allow"
   }
 
-  # Firehose delivery stream permissions
+  # Firehose write access
   statement {
+    sid       = "FirehosePutRecordBatch"
     actions   = ["firehose:PutRecordBatch"]
     resources = [aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn]
     effect    = "Allow"
   }
 
-  # CloudWatch permissions for logging
+  # CloudWatch log write access
   statement {
+    sid = "CloudWatchLogsWriteAccess"
     actions = [
-      "logs:PutLogEvents",
       "logs:CreateLogGroup",
-      "logs:CreateLogStream"
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
     resources = [
       "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
@@ -231,7 +241,6 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
     effect = "Allow"
   }
 }
-
 
 resource "aws_iam_policy" "lambda_transform_policy" {
   name   = var.lambda_iam_policy_name
