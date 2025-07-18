@@ -134,11 +134,11 @@ variable "kinesis_firehose_role_name" {
   default     = "KinesisFirehoseRole"
 }
 
-variable "arn_cloudwatch_logs_to_ship" {
+/*variable "arn_cloudwatch_logs_to_ship" {
   description = "arn of the CloudWatch Log Group that you want to ship to Splunk."
   type        = string
   default     = null
-}
+}*/
 
 variable "name_cloudwatch_logs_to_ship" {
   description = "Name of the CloudWatch Log Group that you want to ship to Splunk (single log group; leave empty to not create the subscription filter; see var.cloudwatch_log_group_names_to_ship for creating subscription filters for multiple log groups)."
