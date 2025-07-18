@@ -195,27 +195,28 @@ POLICY
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "lambda_policy_doc" {
-  # Combine all log access statements into a single statement to reduce size
+data "aws_iam_policy_document" "lambda_logs_get" {
   statement {
     actions = ["logs:GetLogEvents"]
-
     resources = [
       "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:*"
     ]
 
-
     effect = "Allow"
   }
+}
 
-  # Firehose delivery stream permissions
+# IAM policy for Firehose PutRecordBatch (separated)
+data "aws_iam_policy_document" "lambda_firehose_put" {
   statement {
     actions   = ["firehose:PutRecordBatch"]
     resources = [aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn]
     effect    = "Allow"
   }
+}
 
-  # CloudWatch permissions for logging
+# IAM policy for CloudWatch log write permissions (separated)
+data "aws_iam_policy_document" "lambda_logs_write" {
   statement {
     actions = [
       "logs:PutLogEvents",
@@ -229,16 +230,27 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
   }
 }
 
+
 resource "aws_iam_policy" "lambda_transform_policy" {
   name   = var.lambda_iam_policy_name
   policy = data.aws_iam_policy_document.lambda_policy_doc.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy_role_attachment" {
+# IAM role attachment to Lambda role
+resource "aws_iam_role_policy_attachment" "lambda_logs_get_attach" {
   role       = aws_iam_role.kinesis_firehose_lambda.name
-  policy_arn = aws_iam_policy.lambda_transform_policy.arn
+  policy_arn = aws_iam_policy.lambda_logs_get_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_firehose_put_attach" {
+  role       = aws_iam_role.kinesis_firehose_lambda.name
+  policy_arn = aws_iam_policy.lambda_firehose_put_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs_write_attach" {
+  role       = aws_iam_role.kinesis_firehose_lambda.name
+  policy_arn = aws_iam_policy.lambda_logs_write_policy.arn
+}
 # Create the lambda function
 # The lambda function to transform data from compressed format in Cloudwatch to something Splunk can handle (uncompressed)
 resource "aws_lambda_function" "firehose_lambda_transform" {
