@@ -1,5 +1,8 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v9.0.6
+ * [PR #52](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/52) - This handles cases where var.name_cloudwatch_logs_to_ship could be a string, a list, or null.
+
 ## v9.0.5
  * [PR #48](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/48) - Consolidate code for IAM Policy
 

@@ -248,7 +248,7 @@ data "aws_iam_policy_document" "lambda_cw_logging_policy_doc" {
     effect    = "Allow"
   }
 
-  # Allow creating log streams and writing logs to specific Lambda log group
+ # Allow creating log streams and writing logs to specific Lambda log group
   statement {
     actions = [
       "logs:CreateLogStream",
