@@ -195,52 +195,94 @@ POLICY
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "lambda_policy_doc" {
-  # Combine all log access statements into a single statement to reduce size
+# -------------------------
+# 1. Log Access Policy (logs:GetLogEvents)
+# -------------------------
+data "aws_iam_policy_document" "lambda_log_access_policy_doc" {
   statement {
     actions = ["logs:GetLogEvents"]
-    resources = concat(
+    resources = compact(concat(
       var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
-      toset(var.cloudwatch_log_group_names_to_ship) != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
+      [for log in coalesce(toset(var.cloudwatch_log_group_names_to_ship), []) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : [],
-      var.name_cloudwatch_logs_to_ship != null ? tolist([for log in var.name_cloudwatch_logs_to_ship :
+      ],
+      [for log in coalesce(var.name_cloudwatch_logs_to_ship, []) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : []
-    )
+      ]
+    ))
     effect = "Allow"
   }
+}
 
-  # Firehose delivery stream permissions
+resource "aws_iam_policy" "lambda_log_access_policy" {
+  name        = "${var.lambda_iam_policy_name}-log-access"
+  description = "Permissions for Lambda to read specific CloudWatch log groups"
+  policy      = data.aws_iam_policy_document.lambda_log_access_policy_doc.json
+}
+
+# -------------------------
+# 2. Firehose Write Policy
+# -------------------------
+data "aws_iam_policy_document" "lambda_firehose_policy_doc" {
   statement {
     actions   = ["firehose:PutRecordBatch"]
     resources = [aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn]
     effect    = "Allow"
   }
+}
 
-  # CloudWatch permissions for logging
+resource "aws_iam_policy" "lambda_firehose_policy" {
+  name        = "${var.lambda_iam_policy_name}-firehose"
+  description = "Permissions for Lambda to write to Kinesis Firehose"
+  policy      = data.aws_iam_policy_document.lambda_firehose_policy_doc.json
+}
+
+# -------------------------
+# 3. CloudWatch Logging Policy
+# -------------------------
+data "aws_iam_policy_document" "lambda_cw_logging_policy_doc" {
+  # Allow creating log groups (resource-level permission not supported)
+  statement {
+    actions   = ["logs:CreateLogGroup"]
+    resources = ["*"]
+    effect    = "Allow"
+  }
+
+  # Allow creating log streams and writing logs to specific Lambda log group
   statement {
     actions = [
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream"
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
     resources = [
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.lambda_function_name}:*"
     ]
     effect = "Allow"
   }
 }
 
-
-resource "aws_iam_policy" "lambda_transform_policy" {
-  name   = var.lambda_iam_policy_name
-  policy = data.aws_iam_policy_document.lambda_policy_doc.json
+resource "aws_iam_policy" "lambda_cw_logging_policy" {
+  name        = "${var.lambda_iam_policy_name}-cw-logging"
+  description = "Permissions for Lambda to write its own logs"
+  policy      = data.aws_iam_policy_document.lambda_cw_logging_policy_doc.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy_role_attachment" {
+# -------------------------
+# Policy Attachments
+# -------------------------
+resource "aws_iam_role_policy_attachment" "log_access_attachment" {
   role       = aws_iam_role.kinesis_firehose_lambda.name
-  policy_arn = aws_iam_policy.lambda_transform_policy.arn
+  policy_arn = aws_iam_policy.lambda_log_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "firehose_attachment" {
+  role       = aws_iam_role.kinesis_firehose_lambda.name
+  policy_arn = aws_iam_policy.lambda_firehose_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "cw_logging_attachment" {
+  role       = aws_iam_role.kinesis_firehose_lambda.name
+  policy_arn = aws_iam_policy.lambda_cw_logging_policy.arn
 }
 
 # Create the lambda function
