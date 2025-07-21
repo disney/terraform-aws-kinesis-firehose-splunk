@@ -206,7 +206,7 @@ data "aws_iam_policy_document" "lambda_log_access_policy_doc" {
       [for log in coalesce(toset(var.cloudwatch_log_group_names_to_ship), []) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
       ],
-      [for log in coalesce(var.name_cloudwatch_logs_to_ship, []) :
+      [for log in coalesce(tolist([var.name_cloudwatch_logs_to_ship]), []) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
       ]
     ))
