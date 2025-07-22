@@ -195,6 +195,12 @@ POLICY
   tags = var.tags
 }
 
+
+# Required Data Sources
+data "aws_partition" "current" {}
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 ############################
 # 1. LOG ACCESS POLICY
 ############################
@@ -203,12 +209,17 @@ data "aws_iam_policy_document" "lambda_log_access_policy_doc" {
     actions = ["logs:GetLogEvents"]
     resources = compact(concat(
       var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
-      [for log in distinct(coalesce(var.cloudwatch_log_group_names_to_ship, [])) :
+      [for log in distinct(coalesce(tolist(var.cloudwatch_log_group_names_to_ship), [])) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
       ],
-      [for log in coalesce(var.name_cloudwatch_logs_to_ship, []) :
+      var.name_cloudwatch_logs_to_ship != null ? [
+        for log in(
+          can(tolist(var.name_cloudwatch_logs_to_ship))
+          ? tolist(var.name_cloudwatch_logs_to_ship)
+          : [var.name_cloudwatch_logs_to_ship]
+        ) :
         "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]
+      ] : []
     ))
     effect = "Allow"
   }
