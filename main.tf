@@ -273,11 +273,12 @@ data "aws_iam_policy_document" "lambda_cw_logging_policy_doc" {
   }
 }
 
+
 resource "aws_iam_policy" "lambda_cw_logging_policy" {
   name        = "${var.lambda_iam_policy_name}-cw-logging"
   description = "Permissions for Lambda to write its own logs"
   policy      = data.aws_iam_policy_document.lambda_cw_logging_policy_doc.json
-}
+
 
 resource "aws_iam_role_policy_attachment" "lambda_cw_logging_attachment" {
   role       = aws_iam_role.kinesis_firehose_lambda.name
