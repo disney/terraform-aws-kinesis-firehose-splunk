@@ -195,6 +195,7 @@ POLICY
   tags = var.tags
 }
 
+
 ############################
 # 1. LOG ACCESS POLICY
 ############################
@@ -259,7 +260,7 @@ data "aws_iam_policy_document" "lambda_cw_logging_policy_doc" {
   # Allow creating log groups (requires broad permission)
   statement {
     actions   = ["logs:CreateLogGroup"]
-    resources = ["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"]
+    resources = ["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
     effect    = "Allow"
   }
 
