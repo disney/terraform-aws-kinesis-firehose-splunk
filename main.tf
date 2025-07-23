@@ -2,6 +2,25 @@ locals {
   lambda_function_source  = var.local_lambda_file != null ? var.local_lambda_file : "${path.module}/files"
   lambda_function_handler = var.local_lambda_file_handler != null ? var.local_lambda_file_handler : "kinesis-firehose-cloudwatch-logs-processor.handler"
   cloudwatch_log_regions  = var.region == null ? var.cloudwatch_log_regions : [var.region]
+
+  # Build list of all log group ARNs
+  all_log_arns = distinct(compact(flatten([
+    # Process ARN inputs
+    var.arn_cloudwatch_logs_to_ship,
+
+    # Process name inputs
+    [for name in var.cloudwatch_log_group_names_to_ship :
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
+    ],
+
+    # Process name list inputs
+    [for name in var.name_cloudwatch_logs_to_ship :
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
+    ]
+  ])))
+
+  # Split into chunks of 10 (AWS recommended max per statement)
+  log_arn_chunks = chunklist(local.all_log_arns, 10)
 }
 
 # Kenisis firehose stream
@@ -87,8 +106,7 @@ module "hec_token_kms_secret" {
 resource "aws_s3_bucket" "kinesis_firehose_s3_bucket" {
   bucket              = var.s3_bucket_name
   object_lock_enabled = var.s3_bucket_object_lock_enabled
-
-  tags = var.tags
+  tags                = var.tags
 }
 
 resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
@@ -102,27 +120,23 @@ resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
 
 resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
   depends_on = [aws_s3_bucket_ownership_controls.kinesis_firehose_s3_bucket]
-
-  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
-  acl    = "private"
+  bucket     = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
+  acl        = "private"
 }
 
 resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
   #checkov:skip=CKV2_AWS_65: Ensure access control lists for S3 buckets are disabled
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
-
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
-
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
 
   rule {
     bucket_key_enabled = var.s3_bucket_key_enabled
-
     apply_server_side_encryption_by_default {
       kms_master_key_id = var.s3_bucket_server_side_encryption_kms_master_key_id
       sse_algorithm     = var.s3_bucket_server_side_encryption_algorithm
@@ -162,8 +176,7 @@ resource "aws_cloudwatch_log_group" "kinesis_logs" {
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
   retention_in_days = var.cloudwatch_log_retention
   kms_key_id        = var.cloudwach_log_group_kms_key_id
-
-  tags = var.tags
+  tags              = var.tags
 }
 
 # Create the stream
@@ -195,64 +208,65 @@ POLICY
   tags = var.tags
 }
 
-data "aws_iam_policy_document" "lambda_policy_doc" {
-  # Combine all log access statements into a single statement to reduce size
-  statement {
-    actions = ["logs:GetLogEvents"]
-    resources = concat(
-      # Handle `var.arn_cloudwatch_logs_to_ship` (single string or null)
-      var.arn_cloudwatch_logs_to_ship != null ? [var.arn_cloudwatch_logs_to_ship] : [],
+##############################
+# Chunked IAM Policies for Log Access
+##############################
+resource "aws_iam_policy" "log_access_chunks" {
+  for_each = { for idx, chunk in local.log_arn_chunks : idx => chunk if length(chunk) > 0 }
 
-      # Handle `var.cloudwatch_log_group_names_to_ship` (list or null)
-      var.cloudwatch_log_group_names_to_ship != null ? tolist([for log in toset(var.cloudwatch_log_group_names_to_ship) :
-        "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-      ]) : [],
+  name = "${var.lambda_iam_policy_name}-log-access-${each.key}"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["logs:GetLogEvents"],
+        Resource = each.value
+      }
+    ]
+  })
+}
 
-      # Handle `var.name_cloudwatch_logs_to_ship` (string, list, or null)
-      var.name_cloudwatch_logs_to_ship != null ? (
-        can(regex("^.*$", var.name_cloudwatch_logs_to_ship)) ?
-        tolist(["arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.name_cloudwatch_logs_to_ship}:*"]) :
-        tolist([for log in var.name_cloudwatch_logs_to_ship :
-          "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${log}:*"
-        ])
-      ) : []
-    )
-    effect = "Allow"
-  }
+resource "aws_iam_role_policy_attachment" "log_chunk_attachments" {
+  for_each   = aws_iam_policy.log_access_chunks
+  role       = aws_iam_role.kinesis_firehose_lambda.name
+  policy_arn = each.value.arn
+}
 
+##############################
+# General Lambda Policy
+##############################
+data "aws_iam_policy_document" "lambda_general_policy" {
   # Firehose delivery stream permissions
   statement {
     actions   = ["firehose:PutRecordBatch"]
-    resources = [aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn]
-    effect    = "Allow"
+    resources = [var.kinesis_firehose_delivery_stream_arn]
   }
 
   # CloudWatch permissions for logging
   statement {
     actions = [
-      "logs:PutLogEvents",
       "logs:CreateLogGroup",
-      "logs:CreateLogStream"
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
     resources = [
       "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
     ]
-    effect = "Allow"
   }
 }
 
-resource "aws_iam_policy" "lambda_transform_policy" {
-  name   = var.lambda_iam_policy_name
-  policy = data.aws_iam_policy_document.lambda_policy_doc.json
+resource "aws_iam_policy" "lambda_general_policy" {
+  name   = "${var.lambda_iam_policy_name}-general"
+  policy = data.aws_iam_policy_document.lambda_general_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy_role_attachment" {
+resource "aws_iam_role_policy_attachment" "lambda_general_policy_attach" {
   role       = aws_iam_role.kinesis_firehose_lambda.name
-  policy_arn = aws_iam_policy.lambda_transform_policy.arn
+  policy_arn = aws_iam_policy.lambda_general_policy.arn
 }
 
 # Create the lambda function
-# The lambda function to transform data from compressed format in Cloudwatch to something Splunk can handle (uncompressed)
 resource "aws_lambda_function" "firehose_lambda_transform" {
   function_name                  = var.lambda_function_name
   description                    = "Transform data from CloudWatch format to Splunk compatible format"
@@ -289,8 +303,7 @@ resource "aws_cloudwatch_log_group" "firehose_lambda_transform" {
   tags              = var.tags
 }
 
-# kinesis-firehose-cloudwatch-logs-processor.js was taken by copy/paste from the AWS UI.  It is predefined blueprint
-# code supplied to AWS by Splunk.
+# kinesis-firehose-cloudwatch-logs-processor.js blueprint
 data "archive_file" "lambda_function" {
   type        = "zip"
   source_dir  = local.lambda_function_source
@@ -331,12 +344,10 @@ data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
       "s3:ListBucketMultipartUploads",
       "s3:PutObject",
     ]
-
     resources = [
       aws_s3_bucket.kinesis_firehose_s3_bucket.arn,
       "${aws_s3_bucket.kinesis_firehose_s3_bucket.arn}/*",
     ]
-
     effect = "Allow"
   }
 
@@ -345,7 +356,6 @@ data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
       "lambda:InvokeFunction",
       "lambda:GetFunctionConfiguration",
     ]
-
     resources = [
       "${aws_lambda_function.firehose_lambda_transform.arn}:$LATEST",
     ]
@@ -355,12 +365,10 @@ data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
     actions = [
       "logs:PutLogEvents",
     ]
-
     resources = [
       aws_cloudwatch_log_group.kinesis_logs.arn,
       aws_cloudwatch_log_stream.kinesis_logs.arn,
     ]
-
     effect = "Allow"
   }
 }
@@ -387,32 +395,23 @@ data "aws_iam_policy_document" "cloudwatch_to_firehose_trust_assume_policy" {
 }
 
 resource "aws_iam_role" "cloudwatch_to_firehose_trust" {
-  name        = var.cloudwatch_to_firehose_trust_iam_role_name
-  description = "Role for CloudWatch Log Group subscriptions"
-
+  name               = var.cloudwatch_to_firehose_trust_iam_role_name
+  description        = "Role for CloudWatch Log Group subscriptions"
   assume_role_policy = data.aws_iam_policy_document.cloudwatch_to_firehose_trust_assume_policy.json
 }
 
 data "aws_iam_policy_document" "cloudwatch_to_fh_access_policy" {
   statement {
-    actions = [
-      "firehose:*",
-    ]
-
-    effect = "Allow"
-
+    actions = ["firehose:*"]
+    effect  = "Allow"
     resources = [
       aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn,
     ]
   }
 
   statement {
-    actions = [
-      "iam:PassRole",
-    ]
-
-    effect = "Allow"
-
+    actions = ["iam:PassRole"]
+    effect  = "Allow"
     resources = [
       aws_iam_role.cloudwatch_to_firehose_trust.arn,
     ]

@@ -358,3 +358,14 @@ variable "firehose_processing_enabled" {
   type        = bool
   default     = true
 }
+
+variable "kinesis_firehose_delivery_stream_arn" {
+  type        = string
+  description = "ARN of the Kinesis Firehose delivery stream"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags to apply to the IAM role"
+}
