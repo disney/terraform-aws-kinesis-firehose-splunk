@@ -218,7 +218,7 @@ POLICY
 resource "aws_iam_policy" "log_access_chunks" {
   for_each = { for idx, chunk in local.log_arn_chunks : idx => chunk if length(chunk) > 0 }
 
-  name = "${var.lambda_iam_policy_name}-log-access-${each.key}"
+  name = "${var.lambda_iam_policy_name}-${each.key}"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
