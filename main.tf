@@ -32,9 +32,6 @@ locals {
   log_arn_chunks = chunklist(local.all_log_arns, 30)
 }
 
-data "aws_partition" "current" {}
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
 
 # Kinesis Firehose Stream
 resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
