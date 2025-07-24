@@ -429,12 +429,12 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_to_fh" {
   policy_arn = aws_iam_policy.cloudwatch_to_fh_access_policy.arn
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter" {
-  count           = var.name_cloudwatch_logs_to_ship != null ? signum(length(var.name_cloudwatch_logs_to_ship)) : 0
-  name            = var.cloudwatch_log_filter_name
+resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filters" {
+  for_each        = toset(var.name_cloudwatch_logs_to_ship) # Convert list to set for iteration
+  name            = "${var.cloudwatch_log_filter_name}_${each.value}"
   role_arn        = aws_iam_role.cloudwatch_to_firehose_trust.arn
   destination_arn = aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn
-  log_group_name  = var.name_cloudwatch_logs_to_ship
+  log_group_name  = each.value
   filter_pattern  = var.subscription_filter_pattern
 }
 
