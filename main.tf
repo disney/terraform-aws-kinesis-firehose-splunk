@@ -32,6 +32,10 @@ locals {
   log_arn_chunks = chunklist(local.all_log_arns, 30)
 }
 
+data "aws_partition" "current" {}
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 # Kinesis Firehose Stream
 resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {
   name        = var.firehose_name
@@ -127,18 +131,13 @@ resource "aws_s3_bucket_versioning" "kinesis_firehose_s3_bucket_versioning" {
   }
 }
 
-resource "aws_s3_bucket_acl" "kinesis_firehose_s3_bucket" {
-  depends_on = [aws_s3_bucket_ownership_controls.kinesis_firehose_s3_bucket]
-
-  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
-  acl    = "private"
-}
+# REMOVED: aws_s3_bucket_acl resource - no longer needed with BucketOwnerEnforced
 
 resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
 
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "BucketOwnerEnforced" # Fix for CKV2_AWS_65
   }
 }
 
@@ -184,10 +183,9 @@ resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
 # Cloudwatch logging group for Kinesis Firehose
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
-  retention_in_days = var.cloudwatch_log_retention
+  retention_in_days = var.cloudwatch_log_retention < 365 ? 365 : var.cloudwatch_log_retention # Fix for CKV_AWS_338
   kms_key_id        = var.cloudwach_log_group_kms_key_id
-
-  tags = var.tags
+  tags              = var.tags
 }
 
 # Create the stream
@@ -306,7 +304,7 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
 # Cloudwatch logging group for Transform Lambda
 resource "aws_cloudwatch_log_group" "firehose_lambda_transform" {
   name              = "/aws/lambda/${var.lambda_function_name}"
-  retention_in_days = var.cloudwatch_log_retention
+  retention_in_days = var.cloudwatch_log_retention < 365 ? 365 : var.cloudwatch_log_retention # Fix for CKV_AWS_338
   kms_key_id        = var.cloudwach_log_group_kms_key_id
   tags              = var.tags
 }
