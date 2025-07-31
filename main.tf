@@ -261,7 +261,7 @@ data "aws_iam_policy_document" "lambda_general_policy" {
 }
 
 resource "aws_iam_policy" "lambda_general_policy" {
-  name   = "${var.lambda_iam_policy_name}-general"
+  name   = "var.lambda_iam_policy_name"
   policy = data.aws_iam_policy_document.lambda_general_policy.json
 }
 
@@ -451,17 +451,17 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_to_fh" {
 
 # CloudWatch Subscription Filters
 resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filter" {
-  for_each        = toset(local.name_logs_list)
-  name            = "${var.cloudwatch_log_filter_name}-${md5(each.value)}"
+  count           = var.name_cloudwatch_logs_to_ship != null ? signum(length(var.name_cloudwatch_logs_to_ship)) : 0
+  name            = var.cloudwatch_log_filter_name
   role_arn        = aws_iam_role.cloudwatch_to_firehose_trust.arn
   destination_arn = aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn
-  log_group_name  = each.value
+  log_group_name  = var.name_cloudwatch_logs_to_ship
   filter_pattern  = var.subscription_filter_pattern
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_log_filters" {
-  for_each        = toset(var.cloudwatch_log_group_names_to_ship)
-  name            = "${var.cloudwatch_log_filter_name}-${md5(each.value)}"
+  for_each        = var.cloudwatch_log_group_names_to_ship != null ? toset(var.cloudwatch_log_group_names_to_ship) : toset([])
+  name            = "${var.cloudwatch_log_filter_name}_${each.value}"
   role_arn        = aws_iam_role.cloudwatch_to_firehose_trust.arn
   destination_arn = aws_kinesis_firehose_delivery_stream.kinesis_firehose.arn
   log_group_name  = each.value
