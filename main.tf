@@ -301,7 +301,7 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
 # Cloudwatch logging group for Transform Lambda
 resource "aws_cloudwatch_log_group" "firehose_lambda_transform" {
   name              = "/aws/lambda/${var.lambda_function_name}"
-  retention_in_days = var.cloudwatch_log_retention
+  retention_in_days = var.cloudwatch_log_retention < 365 ? 365 : var.cloudwatch_log_retention # Fix for CKV_AWS_338
   kms_key_id        = var.cloudwach_log_group_kms_key_id
   tags              = var.tags
 }
