@@ -261,13 +261,14 @@ data "aws_iam_policy_document" "lambda_general_policy" {
 }
 
 resource "aws_iam_policy" "lambda_general_policy" {
-  name   = "var.lambda_iam_policy_name"
+  name   = var.lambda_iam_policy_name
   policy = data.aws_iam_policy_document.lambda_general_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_general_policy_attach" {
   role       = aws_iam_role.kinesis_firehose_lambda.name
   policy_arn = aws_iam_policy.lambda_general_policy.arn
+  depends_on = [aws_iam_policy.lambda_general_policy]
 }
 
 # Create the lambda function
