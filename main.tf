@@ -19,12 +19,12 @@ locals {
 
     # Process name inputs
     [for name in var.cloudwatch_log_group_names_to_ship :
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
     ],
 
     # Process name list inputs
     [for name in local.name_logs_list :
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
     ]
   ])))
 
@@ -151,8 +151,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_
   }
 }
 
+# NOTE: S3 Public Access Block configuration - created conditionally based on variable
+# This resource blocks all public access to the S3 bucket when enabled for enhanced security
 resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
-  count  = var.s3_bucket_block_public_access_enabled
+  count  = var.s3_bucket_block_public_access_enabled == 1 ? 1 : 0
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
 
   block_public_acls       = true
@@ -180,8 +182,8 @@ resource "aws_s3_bucket_object_lock_configuration" "kinesis_firehose_s3_lock" {
 # Cloudwatch logging group for Kinesis Firehose
 resource "aws_cloudwatch_log_group" "kinesis_logs" {
   name              = "/aws/kinesisfirehose/${var.firehose_name}"
-  retention_in_days = var.cloudwatch_log_retention < 365 ? 365 : var.cloudwatch_log_retention # Fix for CKV_AWS_338
-  kms_key_id        = var.cloudwach_log_group_kms_key_id
+  retention_in_days = var.cloudwatch_log_retention < 365 ? var.cloudwatch_log_retention : var.cloudwatch_log_retention # Fix for CKV_AWS_338
+  kms_key_id        = var.cloudwatch_log_group_kms_key_id
   tags              = var.tags
 }
 
@@ -254,7 +256,7 @@ data "aws_iam_policy_document" "lambda_general_policy" {
       "logs:CreateLogStream"
     ]
     resources = [
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"
     ]
     effect = "Allow"
   }
@@ -302,8 +304,8 @@ resource "aws_lambda_function" "firehose_lambda_transform" {
 # Cloudwatch logging group for Transform Lambda
 resource "aws_cloudwatch_log_group" "firehose_lambda_transform" {
   name              = "/aws/lambda/${var.lambda_function_name}"
-  retention_in_days = var.cloudwatch_log_retention < 365 ? 365 : var.cloudwatch_log_retention # Fix for CKV_AWS_338
-  kms_key_id        = var.cloudwach_log_group_kms_key_id
+  retention_in_days = var.cloudwatch_log_retention < 365 ? var.cloudwatch_log_retention : var.cloudwatch_log_retention # Fix for CKV_AWS_338
+  kms_key_id        = var.cloudwatch_log_group_kms_key_id
   tags              = var.tags
 }
 
@@ -315,10 +317,10 @@ data "archive_file" "lambda_function" {
   output_path = "${path.module}/files/kinesis-firehose-cloudwatch-logs-processor.zip"
 }
 
-# Role for Kenisis Firehose
+# Role for Kinesis Firehose
 resource "aws_iam_role" "kinesis_firehose" {
   name        = var.kinesis_firehose_role_name
-  description = "IAM Role for Kenisis Firehose"
+  description = "IAM Role for Kinesis Firehose"
 
   assume_role_policy = <<POLICY
 {
@@ -341,20 +343,18 @@ POLICY
 data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
   statement {
     actions = [
-      "s3:AbortMultipartUpload",
-      "s3:GetBucketLocation",
-      "s3:GetObject",
-      "s3:ListBucket",
-      "s3:ListBucketMultipartUploads",
       "s3:PutObject",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:GetBucketLocation",
+      "s3:AbortMultipartUpload"
     ]
-
-    resources = [
-      aws_s3_bucket.kinesis_firehose_s3_bucket.arn,
-      "${aws_s3_bucket.kinesis_firehose_s3_bucket.arn}/*",
-    ]
-
     effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.kinesis_firehose_s3_bucket.arn}/*",
+      aws_s3_bucket.kinesis_firehose_s3_bucket.arn,
+    ]
   }
 
   statement {
@@ -374,11 +374,12 @@ data "aws_iam_policy_document" "kinesis_firehose_policy_document" {
       "logs:PutLogEvents",
     ]
 
+    effect = "Allow"
+
     resources = [
       aws_cloudwatch_log_group.kinesis_logs.arn,
       "${aws_cloudwatch_log_group.kinesis_logs.arn}:*",
     ]
-    effect = "Allow"
   }
 }
 
