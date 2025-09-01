@@ -260,6 +260,14 @@ variable "cloudwach_log_group_kms_key_id" {
   default     = null
 }
 
+# NOTE: The above variable name contains a typo (cloudwach). It is kept for backwards compatibility.
+# Users should migrate to the correctly spelled variable below.
+variable "cloudwatch_log_group_kms_key_id" {
+  description = "KMS key ID of the key to use to encrypt the CloudWatch log group (preferred; replaces misspelled cloudwach_log_group_kms_key_id)"
+  type        = string
+  default     = null
+}
+
 variable "lambda_reserved_concurrent_executions" {
   description = "Amount of reserved concurrent executions for this lambda function. A value of `0` disables lambda from being triggered and `-1` removes any concurrency limitations."
   type        = string
