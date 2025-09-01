@@ -116,6 +116,17 @@ resource "aws_s3_bucket_ownership_controls" "kinesis_firehose_s3_bucket" {
   }
 }
 
+# NOTE: S3 Public Access Block configuration - created conditionally based on variable
+# This resource blocks all public access to the S3 bucket when enabled for enhanced security
+resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {
+  count  = var.s3_bucket_block_public_access_enabled == 1 ? 1 : 0
+  bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kinesis_firehose_s3_bucket" {
   bucket = aws_s3_bucket.kinesis_firehose_s3_bucket.bucket
