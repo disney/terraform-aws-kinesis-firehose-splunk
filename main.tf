@@ -395,8 +395,11 @@ resource "aws_iam_role" "cloudwatch_to_firehose_trust" {
 
 data "aws_iam_policy_document" "cloudwatch_to_fh_access_policy" {
   statement {
+    # NOTE: Restrict to minimal required Firehose actions for CloudWatch log subscription
+    # Following principle of least privilege instead of using firehose:*
     actions = [
-      "firehose:*",
+      "firehose:PutRecordBatch",
+      "firehose:DescribeDeliveryStream",
     ]
 
     effect = "Allow"
