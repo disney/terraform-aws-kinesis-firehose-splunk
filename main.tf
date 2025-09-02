@@ -11,14 +11,19 @@ locals {
   name_logs_list = var.name_cloudwatch_logs_to_ship != null ? (
     try(tolist(var.name_cloudwatch_logs_to_ship), [var.name_cloudwatch_logs_to_ship])
   ) : []
+  
+  # Handle null value for cloudwatch_log_group_names_to_ship
+  cloudwatch_log_group_names_to_ship_list = var.cloudwatch_log_group_names_to_ship != null ? (
+    try(tolist(var.cloudwatch_log_group_names_to_ship), [var.cloudwatch_log_group_names_to_ship])
+  ) : []
 
   # Build list of all log group ARNs
   all_log_arns = distinct(compact(flatten([
     # Process ARN inputs
     [for arn in local.arn_logs_list : arn],
 
-    # Process name inputs
-    [for name in var.cloudwatch_log_group_names_to_ship :
+    # Process name inputs - now using the safe list that handles null values
+    [for name in local.cloudwatch_log_group_names_to_ship_list :
       "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
     ],
 
@@ -31,7 +36,6 @@ locals {
   # Split into chunks of 30 for IAM policies
   log_arn_chunks = chunklist(local.all_log_arns, 30)
 }
-
 
 # Kinesis Firehose Stream
 resource "aws_kinesis_firehose_delivery_stream" "kinesis_firehose" {

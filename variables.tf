@@ -203,7 +203,7 @@ variable "cloudwatch_log_filter_name" {
 variable "cloudwatch_log_group_names_to_ship" {
   description = "List of CloudWatch Log Group names that you want to ship to Splunk."
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "subscription_filter_pattern" {
