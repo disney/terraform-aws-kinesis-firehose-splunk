@@ -24,12 +24,12 @@ locals {
 
     # Process name inputs - now using the safe list that handles null values
     [for name in local.cloudwatch_log_group_names_to_ship_list :
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
     ],
 
     # Process name list inputs
     [for name in local.name_logs_list :
-      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
+      "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:${name}:*"
     ]
   ])))
 
