@@ -23,7 +23,7 @@ variable "hec_token" {
 
 variable "nodejs_runtime" {
   description = "Runtime version of nodejs for Lambda function"
-  default     = "nodejs20.x"
+  default     = "nodejs22.x"
   type        = string
 }
 
@@ -96,7 +96,7 @@ variable "tags" {
 variable "cloudwatch_log_retention" {
   description = "Length in days to keep CloudWatch logs of Kinesis Firehose"
   type        = number
-  default     = 30
+  default     = 365
 }
 
 variable "log_stream_name" {
@@ -254,7 +254,7 @@ variable "firehose_server_side_encryption_key_arn" {
   default     = null
 }
 
-variable "cloudwach_log_group_kms_key_id" {
+variable "cloudwatch_log_group_kms_key_id" {
   description = "KMS key ID of the key to use to encrypt the Cloudwatch log group"
   type        = string
   default     = null

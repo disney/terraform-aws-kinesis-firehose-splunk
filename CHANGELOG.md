@@ -1,5 +1,16 @@
 # Change Log for Terraform AWS Kinesis Firehose Splunk
 
+## v10.0.1
+ * [PR #63](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/63) - PE-425:Fixing null value. Thanks @amrendashing5.
+
+## v10.0.0 - **BREAKING CHANGES**
+ * Require AWS provider for Terraform `">= 6.11.0, < 7.0.0"`
+ * `nodejs22.x` is now the default runtime for the Lambda
+ * Re-ordered the items in the policy of `data "aws_iam_policy_document" "kinesis_firehose_policy_document"` to prevent TF thinking there was a change to make when there was not.
+ * [PR #58](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/58) - Fixing bug for Cannot exceed quota for PolicySize: 6144. Thanks @amrendrasingh5
+ * Corrected the misspelling in `var.cloudwatch_log_group_kms_key_id`. Was previously `var.cloudwach_log_group_kms_key_id`
+ * Added conditional logic to `resource "aws_s3_bucket_public_access_block" "kinesis_firehose_s3_bucket" {}` per [#PR60](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/60).
+
 ## v9.0.6
  * [PR #52](https://github.com/disney/terraform-aws-kinesis-firehose-splunk/pull/52) - This handles cases where var.name_cloudwatch_logs_to_ship could be a string, a list, or null.
 
