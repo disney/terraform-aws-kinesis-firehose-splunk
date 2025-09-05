@@ -50,14 +50,14 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_archive"></a> [archive](#requirement\_archive) | >= 2.3.0, < 3.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0.0, < 6.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.11.0, < 7.0.0 |
 
 ### Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.4.0 |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.8.0 |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.7.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.11.0 |
 
 ### Modules
 
@@ -76,17 +76,18 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | [aws_cloudwatch_log_subscription_filter.cloudwatch_log_filters](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
 | [aws_iam_policy.cloudwatch_to_fh_access_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.kinesis_firehose_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.lambda_transform_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.lambda_general_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.log_access_chunks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.cloudwatch_to_firehose_trust](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.kinesis_firehose](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.kinesis_firehose_lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.cloudwatch_to_fh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.kinesis_fh_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.lambda_policy_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.lambda_general_policy_attach](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.log_chunk_attachments](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_kinesis_firehose_delivery_stream.kinesis_firehose](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kinesis_firehose_delivery_stream) | resource |
 | [aws_lambda_function.firehose_lambda_transform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function) | resource |
 | [aws_s3_bucket.kinesis_firehose_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
-| [aws_s3_bucket_acl.kinesis_firehose_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl) | resource |
 | [aws_s3_bucket_lifecycle_configuration.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_object_lock_configuration.kinesis_firehose_s3_lock](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object_lock_configuration) | resource |
 | [aws_s3_bucket_ownership_controls.kinesis_firehose_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
@@ -98,7 +99,7 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | [aws_iam_policy_document.cloudwatch_to_fh_access_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cloudwatch_to_firehose_trust_assume_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kinesis_firehose_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.lambda_policy_doc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_general_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
@@ -110,11 +111,11 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | Name of the s3 bucket Kinesis Firehose uses for backups | `string` | n/a | yes |
 | <a name="input_arn_cloudwatch_logs_to_ship"></a> [arn\_cloudwatch\_logs\_to\_ship](#input\_arn\_cloudwatch\_logs\_to\_ship) | arn of the CloudWatch Log Group that you want to ship to Splunk. | `string` | `null` | no |
 | <a name="input_aws_s3_bucket_versioning"></a> [aws\_s3\_bucket\_versioning](#input\_aws\_s3\_bucket\_versioning) | Versioning state of the bucket. Valid values: Enabled, Suspended, or Disabled. Disabled should only be used when creating or importing resources that correspond to unversioned S3 buckets. | `string` | `null` | no |
-| <a name="input_cloudwach_log_group_kms_key_id"></a> [cloudwach\_log\_group\_kms\_key\_id](#input\_cloudwach\_log\_group\_kms\_key\_id) | KMS key ID of the key to use to encrypt the Cloudwatch log group | `string` | `null` | no |
 | <a name="input_cloudwatch_log_filter_name"></a> [cloudwatch\_log\_filter\_name](#input\_cloudwatch\_log\_filter\_name) | Name of Log Filter for CloudWatch Log subscription to Kinesis Firehose | `string` | `"KinesisSubscriptionFilter"` | no |
+| <a name="input_cloudwatch_log_group_kms_key_id"></a> [cloudwatch\_log\_group\_kms\_key\_id](#input\_cloudwatch\_log\_group\_kms\_key\_id) | KMS key ID of the key to use to encrypt the Cloudwatch log group | `string` | `null` | no |
 | <a name="input_cloudwatch_log_group_names_to_ship"></a> [cloudwatch\_log\_group\_names\_to\_ship](#input\_cloudwatch\_log\_group\_names\_to\_ship) | List of CloudWatch Log Group names that you want to ship to Splunk. | `list(string)` | `null` | no |
 | <a name="input_cloudwatch_log_regions"></a> [cloudwatch\_log\_regions](#input\_cloudwatch\_log\_regions) | List of regions to allow CloudWatch logs to be shipped from. Set in Kinesis Firehose role's trust polucy | `list(string)` | `[]` | no |
-| <a name="input_cloudwatch_log_retention"></a> [cloudwatch\_log\_retention](#input\_cloudwatch\_log\_retention) | Length in days to keep CloudWatch logs of Kinesis Firehose | `number` | `30` | no |
+| <a name="input_cloudwatch_log_retention"></a> [cloudwatch\_log\_retention](#input\_cloudwatch\_log\_retention) | Length in days to keep CloudWatch logs of Kinesis Firehose | `number` | `365` | no |
 | <a name="input_cloudwatch_to_fh_access_policy_name"></a> [cloudwatch\_to\_fh\_access\_policy\_name](#input\_cloudwatch\_to\_fh\_access\_policy\_name) | Name of IAM policy attached to the IAM role for CloudWatch to Kinesis Firehose subscription | `string` | `"KinesisCloudWatchToFirehosePolicy"` | no |
 | <a name="input_cloudwatch_to_firehose_trust_iam_role_name"></a> [cloudwatch\_to\_firehose\_trust\_iam\_role\_name](#input\_cloudwatch\_to\_firehose\_trust\_iam\_role\_name) | IAM Role name for CloudWatch to Kinesis Firehose subscription | `string` | `"CloudWatchToSplunkFirehoseTrust"` | no |
 | <a name="input_enable_fh_cloudwatch_logging"></a> [enable\_fh\_cloudwatch\_logging](#input\_enable\_fh\_cloudwatch\_logging) | Enable kinesis firehose CloudWatch logging. (It only logs errors) | `bool` | `true` | no |
@@ -149,7 +150,7 @@ As of v7.0.0, there are two additional options available to pass in the HEC toke
 | <a name="input_local_lambda_file_handler"></a> [local\_lambda\_file\_handler](#input\_local\_lambda\_file\_handler) | Allows you to specify Lambda handler if using a local custom file for Lambda function | `string` | `null` | no |
 | <a name="input_log_stream_name"></a> [log\_stream\_name](#input\_log\_stream\_name) | Name of the CloudWatch log stream for Kinesis Firehose CloudWatch log group | `string` | `"SplunkDelivery"` | no |
 | <a name="input_name_cloudwatch_logs_to_ship"></a> [name\_cloudwatch\_logs\_to\_ship](#input\_name\_cloudwatch\_logs\_to\_ship) | Name of the CloudWatch Log Group that you want to ship to Splunk (single log group; leave empty to not create the subscription filter; see var.cloudwatch\_log\_group\_names\_to\_ship for creating subscription filters for multiple log groups). | `string` | `null` | no |
-| <a name="input_nodejs_runtime"></a> [nodejs\_runtime](#input\_nodejs\_runtime) | Runtime version of nodejs for Lambda function | `string` | `"nodejs20.x"` | no |
+| <a name="input_nodejs_runtime"></a> [nodejs\_runtime](#input\_nodejs\_runtime) | Runtime version of nodejs for Lambda function | `string` | `"nodejs22.x"` | no |
 | <a name="input_object_lock_configuration_days"></a> [object\_lock\_configuration\_days](#input\_object\_lock\_configuration\_days) | Required if years is not specified. Number of days that you want to specify for the default retention period | `number` | `null` | no |
 | <a name="input_object_lock_configuration_mode"></a> [object\_lock\_configuration\_mode](#input\_object\_lock\_configuration\_mode) | Default Object Lock retention mode you want to apply to new objects placed in the specified bucket. Valid values: COMPLIANCE, GOVERNANCE | `string` | `null` | no |
 | <a name="input_object_lock_configuration_token"></a> [object\_lock\_configuration\_token](#input\_object\_lock\_configuration\_token) | S3 bucket object lock configuration token | `string` | `null` | no |
