@@ -67,6 +67,11 @@ variable "hec_endpoint_type" {
   description = "Splunk HEC endpoint type; `Raw` or `Event`"
   type        = string
   default     = "Raw"
+
+  validation {
+    condition     = contains(["Raw", "Event"], var.hec_endpoint_type)
+    error_message = "HEC endpoint type must be either 'Raw' or 'Event'."
+  }
 }
 
 variable "s3_backup_mode" {
