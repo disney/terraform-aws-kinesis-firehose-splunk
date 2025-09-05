@@ -1,3 +1,42 @@
 {
-  "type": "module"
+  "name": "kinesis-firehose-cloudwatch-logs-processor",
+  "version": "1.0.0",
+  "description": "AWS Lambda function for processing CloudWatch Logs data in Kinesis Firehose",
+  "main": "kinesis-firehose-cloudwatch-logs-processor.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint *.js",
+    "lint:fix": "eslint *.js --fix"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.57.0",
+    "@jest/globals": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "!*.test.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "kinesis",
+    "firehose",
+    "cloudwatch",
+    "logs",
+    "terraform"
+  ],
+  "author": "AWS",
+  "license": "Amazon Software License"
 }
